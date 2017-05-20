@@ -15,7 +15,7 @@ However, event handlers can be written in any language that has an implemented "
 
 `kless` event handlers have "**frontends**". Frontends are sidecar containers that either pull events from event sources or are targets that receive events pushed to the handler. Frontends are associated with configuration information that applies to the event source. 
 
-Frontends also have a "**frontend type**". Frontend Types are containers that implement the frontend, and they are registered with `kless` so in the future any other event source can be supported.
+Frontends have a "**frontend type**". Frontend Types are containers that implement the frontend, and they are registered with `kless` so in the future any other event source can be supported.
 
 Currently the following push methods are supported:
 
@@ -35,21 +35,21 @@ The **request** and **response** are both simple objects that have two fields. T
 
 # Usage
 
-To create an event handler from the CLI you'd run a command of the following format:
+To create an event handler from the CLI run a command of the following format:
 
 ```kless create handler -e <event handler name> -b <event handler builder> -f <frontend> <event handler source code>```
 
-For example to create an event handler implemented in Go from a local file with events pushed to it over HTTP you'd run:
+For example to create an event handler implemented in Go from a local file with events pushed to it over HTTP run:
 
 ```kubeless create handler -e go-http-handler1 -b go-1.7.4 -f http-local -s EventHandler.go```
 
-Similary, if you'd want to create an event handler implemented in Java from a local file that would pull events from Kafka:
+Similary, if you want to create an event handler implemented in Java from a local file that would pull events from Kafka:
 
 ```kubeless create handler -e java-kafka-handler1 -b java-8u111 -f kafka-local -s EventHandler.java```
 
 # Examples
 
-The following is an example of the simples possible event handler written in Go:
+The following is an example of the simplest possible event handler written in Go:
 
 ```
 package eventhandler
@@ -64,11 +64,11 @@ type EventHandler struct {
 }
 
 func (t EventHandler) Handler(c *kl.Context, resp *kl.Response, req *kl.Request) {
-	fmt.Printf("Inside funcHandler\n")
+	fmt.Println("Inside event handler...")
 }
 ```
 
-The following is an example of the simples possible event handler written in Java:
+The following is an example of the simplest possible event handler written in Java:
 
 ```
 package io.kless;
@@ -164,4 +164,4 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 
 # Status
 
-kless is currently a work-in-progress/POC not intended for serious usage...
+`kless` is currently a work-in-progress/POC not intended for serious usage...
