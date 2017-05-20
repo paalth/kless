@@ -162,6 +162,18 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 
 ```
 
+# Interface
+`kless` has 3 main interfaces:
+
+1. The **kless** CLI can be used to manipulate event handlers, event handler builders, frontends and frontend types from the command line.
+
+2. The **kless-ui** is a web-based interfaces based on the Kubernetes Dashboard used to manipulate the same objects as the CLI.
+
+3. Event handler stats are written to an InfluxDB instance and **Grafana** dashboards are used to visualize the stored stats.
+
+# Architecture
+Description coming soon...
+
 # Status
 
 `kless` is currently a work-in-progress/POC not intended for serious usage...
