@@ -162,7 +162,7 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 
 ```
 
-# Interface
+# Interfaces
 `kless` has 3 main interfaces:
 
 1. The **kless** CLI can be used to manipulate event handlers, event handler builders, frontends and frontend types from the command line.
@@ -172,7 +172,14 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 3. Event handler stats are written to an InfluxDB instance and **Grafana** dashboards are used to visualize the stored stats.
 
 # Architecture
-Description coming soon...
+`kless` consists of a range of components:
+
+- A **kless-server** that runs on Kubernetes like any regular application (most commonly in the 'kless' namespace)
+- The **kless** CLI which communicates with the **kless-server** over GRPC
+- A **docker-registry** where all of the various containers (event handlers, event handler builders & frontend types) are stored
+- A **etcd-operator** which manages an **etcd** instance where all **kless** state is stored
+- An InfluxDB instance where event handler stats are stored
+- A Grafana instance that can be used to display stats in InfluxDB
 
 # Status
 
