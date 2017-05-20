@@ -176,6 +176,7 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 
 - A **kless-server** that runs on Kubernetes like any regular application (most commonly in the 'kless' namespace)
 - The **kless** CLI which communicates with the **kless-server** over GRPC
+- The **kless-ui** dashboard which communicates with the **kless-server** over GRPC
 - A **docker-registry** where all of the various containers (event handlers, event handler builders & frontend types) are stored
 - A **etcd-operator** which manages an **etcd** instance where all **kless** state is stored
 - An InfluxDB instance where event handler stats are stored
