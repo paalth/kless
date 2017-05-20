@@ -2,7 +2,7 @@
 `kless` - a native &amp; naive event-handler framework for Kubernetes
 
 # Description 
-`kless` is a simple serverless framework that supports push & pull events with event handlers written in mainly typed languages.
+`kless` is a simple "serverless" framework that supports push & pull events with event handlers written in mainly typed languages.
 
 It is a native Kubernetes framework as it attempts to use as many existing Kubernetes features as possible, and it is a naive framework as it currently goes about it's business in the simplest possible way that could conceivably work.
 
