@@ -11,7 +11,7 @@ Currently event handlers can be written in the following languages:
 - Go
 - Java
 
-However, event handlers can be written in any language that has an implemented "**event handler builder**". Event Handler Builders are responsible for compiling the event handler source code and turning them into containers that can be deployed onto Kubernetes. Event Handler Builders are themselves just containers registered with `kless` so in the future any other language can be supported. 
+However, event handlers can be written in any language that has an implemented "**event handler builder**". Event Handler Builders are responsible for compiling the event handler source code and turning it into images that can be deployed in Kubernetes pods. Event Handler Builders are themselves just images/containers registered with `kless` so in the future any other language can be supported. 
 
 `kless` event handlers have "**frontends**". Frontends are sidecar containers that either pull events from event sources or are targets that receive events pushed to the handler. Frontends are associated with configuration information that applies to the event source. 
 
