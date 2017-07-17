@@ -41,11 +41,11 @@ To create an event handler from the CLI run a command of the following format:
 
 For example to create an event handler implemented in Go from a local file with events pushed to it over HTTP run:
 
-```kubeless create handler -e go-http-handler1 -b go-1.7.4 -f http-local -s EventHandler.go```
+```kless create handler -e go-http-handler1 -b go-1.7.4 -f http-local -s EventHandler.go```
 
 Similary, if you want to create an event handler implemented in Java from a local file that would pull events from Kafka:
 
-```kubeless create handler -e java-kafka-handler1 -b java-8u111 -f kafka-local -s EventHandler.java```
+```kless create handler -e java-kafka-handler1 -b java-8u111 -f kafka-local -s EventHandler.java```
 
 # Examples
 

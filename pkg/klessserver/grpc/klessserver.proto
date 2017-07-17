@@ -1,0 +1,193 @@
+// Definition of the Kless Server API 
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.kless";
+option java_outer_classname = "KlessServerProto";
+
+package klessserver;
+
+// The Kless API Server service definition
+service KlessAPI {
+  // Version API
+  rpc GetServerVersion (GetServerVersionRequest) returns (GetServerVersionReply) {}
+
+  // Event handler API
+  rpc CreateEventHandler (CreateEventHandlerRequest) returns (CreateEventHandlerReply) {}
+  rpc GetEventHandlers (GetEventHandlersRequest) returns (stream EventHandlerInformation) {}
+  rpc GetEventHandlerStatistics (GetEventHandlerStatisticsRequest) returns (stream EventHandlerStatisticsInformation) {}
+  rpc DeleteEventHandler (DeleteEventHandlerRequest) returns (DeleteEventHandlerReply) {}
+
+  // Event handler builder API
+  rpc CreateEventHandlerBuilder (CreateEventHandlerBuilderRequest) returns (CreateEventHandlerBuilderReply) {}
+  rpc GetEventHandlerBuilders (GetEventHandlerBuildersRequest) returns (stream EventHandlerBuilderInformation) {}
+  rpc DeleteEventHandlerBuilder (DeleteEventHandlerBuilderRequest) returns (DeleteEventHandlerBuilderReply) {}
+
+  // Event handler frontend API
+  rpc CreateEventHandlerFrontend (CreateEventHandlerFrontendRequest) returns (CreateEventHandlerFrontendReply) {}
+  rpc GetEventHandlerFrontends (GetEventHandlerFrontendsRequest) returns (stream FrontendInformation) {}
+  rpc DeleteEventHandlerFrontend (DeleteEventHandlerFrontendRequest) returns (DeleteEventHandlerFrontendReply) {}
+
+  // Event handler frontend type API
+  rpc CreateEventHandlerFrontendType (CreateEventHandlerFrontendTypeRequest) returns (CreateEventHandlerFrontendTypeReply) {}
+  rpc GetEventHandlerFrontendTypes (GetEventHandlerFrontendTypesRequest) returns (stream FrontendTypeInformation) {}
+  rpc DeleteEventHandlerFrontendType (DeleteEventHandlerFrontendTypeRequest) returns (DeleteEventHandlerFrontendTypeReply) {}
+}
+
+message GetServerVersionRequest {
+  string clientversion = 1;
+}
+
+message GetServerVersionReply {
+  string serverversion = 1;
+}
+
+message CreateEventHandlerRequest {
+  string clientversion = 1;
+  string eventHandlerName = 2;
+  string eventHandlerNamespace = 3;
+  string eventHandlerBuilder = 4;
+  bytes  eventHandlerSourceCode = 5;
+  string eventHandlerSourceCodeURL = 6;
+  string eventHandlerVersion = 7;
+  string eventHandlerFrontend = 8;
+  bytes  eventHandlerDependencies = 9;
+  string eventHandlerDependenciesURL = 10;
+}
+
+message CreateEventHandlerReply {
+  string response = 1;
+}
+
+message GetEventHandlersRequest {
+  string clientversion = 1;
+  string eventHandlerNamespace = 2;
+}
+
+message EventHandlerInformation {
+	string eventHandlerId = 1;
+	string eventHandlerName = 2;
+	string eventHandlerNamespace = 3;
+	string eventHandlerVersion = 4;
+	string eventHandlerBuilder  = 5;
+	string eventHandlerBuilderURL  = 6;
+	string frontend = 7;
+}
+
+message GetEventHandlerStatisticsRequest {
+  string clientversion = 1;
+  string eventHandlerNamespace = 2;
+	string eventHandlerName = 3;
+  string startTime = 4;
+  string endTime = 5;
+  bool summary = 6;
+}
+
+message EventHandlerStatisticsInformation {
+	string timestamp = 1;
+	string eventHandlerName = 2;
+	string eventHandlerNamespace = 3;
+	string eventHandlerVersion = 4;
+	string podName = 5;
+  int64 requestSize = 6;
+  int64 responseSize = 7;
+  int64 responseTime = 8; 
+}
+
+message DeleteEventHandlerRequest {
+  string clientversion = 1;
+  string eventHandlerName = 2;
+  string eventHandlerNamespace = 3;
+}
+
+message DeleteEventHandlerReply {
+  string response = 1;
+}
+
+message CreateEventHandlerBuilderRequest {
+  string clientversion = 1;
+  string eventHandlerBuilderName = 2;
+  string eventHandlerBuilderURL = 3;
+  map<string,bytes> eventHandlerBuilderInformation = 4;
+}
+
+message CreateEventHandlerBuilderReply {
+  string response = 1;
+}
+
+message GetEventHandlerBuildersRequest {
+  string clientversion = 1;
+}
+
+message EventHandlerBuilderInformation {
+  string eventHandlerBuilderName = 1;
+  string eventHandlerBuilderURL = 2;
+}
+
+message DeleteEventHandlerBuilderRequest {
+  string clientversion = 1;
+  string eventHandlerBuilderName = 2;
+}
+
+message DeleteEventHandlerBuilderReply {
+  string response = 1;
+}
+
+message CreateEventHandlerFrontendRequest {
+  string clientversion = 1;
+  string eventHandlerFrontendName = 2;
+  string eventHandlerFrontendType = 3;
+  map<string,string> eventHandlerFrontendInformation = 4;
+  string eventHandlerFrontendSecret = 5;
+}
+
+message CreateEventHandlerFrontendReply {
+  string response = 1;
+}
+
+message GetEventHandlerFrontendsRequest {
+  string clientversion = 1;
+}
+
+message FrontendInformation {
+  string eventHandlerFrontendName = 1;
+  string eventHandlerFrontendType = 2;
+}
+
+message DeleteEventHandlerFrontendRequest {
+  string clientversion = 1;
+  string eventHandlerFrontendName = 2;
+}
+
+message DeleteEventHandlerFrontendReply {
+  string response = 1;
+}
+
+message CreateEventHandlerFrontendTypeRequest {
+  string clientversion = 1;
+  string eventHandlerFrontendType = 2;
+  string eventHandlerFrontendTypeURL = 3;
+}
+
+message CreateEventHandlerFrontendTypeReply {
+  string response = 1;
+}
+
+message GetEventHandlerFrontendTypesRequest {
+  string clientversion = 1;
+}
+
+message FrontendTypeInformation {
+  string eventHandlerFrontendType = 1;
+  string eventHandlerFrontendTypeURL = 2;
+}
+
+message DeleteEventHandlerFrontendTypeRequest {
+  string clientversion = 1;
+  string eventHandlerFrontendType = 2;
+}
+
+message DeleteEventHandlerFrontendTypeReply {
+  string response = 1;
+}
