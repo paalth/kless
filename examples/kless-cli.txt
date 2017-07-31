@@ -1,0 +1,43 @@
+export KLESS_SERVERADDRESS=10.245.1.3:31015
+
+------
+
+kless create frontendtype -t http -u 10.245.1.1:5000/klessfrontendhttp:1.1
+
+kless create builder -b go-1.7.4 -u 10.246.91.3:5000/eventhandlerbuildergo:1.2 -i "KlessInterface=pkg/interface/klessgo/Interface.go,InvokeEventHandler=pkg/invoke/InvokeEventHandler.go"
+
+kless create frontend -t http -f http3080 -i KLESS_FRONTEND_HTTP_PORT=3080
+
+kless create handler -e go-http-handler1 -b go-1.7.4 -f http3080 -s examples/go/eventhandler/EventHandler2.go
+
+------
+
+kless create builder -b java-8u111 -u 10.246.91.3:5000/eventhandlerbuilderjava:1.1 -i "KlessInterface=examples/java/io/kless/EventHandlerInterface.java,InvokeEventHandler=examples/java/io/kless/InvokeEventHandler.java,ContextSource=examples/java/io/kless/Context.java,RequestSource=examples/java/io/kless/Request.java,ResponseSource=examples/java/io/kless/Response.java"
+
+kless create handler -e java-http-handler1 -b java-8u111 -f http3080 -s examples/java/io/kless/EventHandler1.java -n othernamespace
+
+------
+
+kless create frontendtype -t rabbitmq -u 10.245.1.1:5000/klessfrontendrabbitmq:1.2
+
+kless create frontend -f rabbitmq-local -t rabbitmq -i "KLSS_FRONTEND_HOSTNAME=10.245.1.2,KLESS_FRONTEND_QUEUE_NAME=testqueueu,KLESS_FRONTEND_TYPE=Q_CONSUMER"
+
+kless create handler -e go-rabbitmq-handler1 -b go-1.7.4 -f rabbitmq-local -s examples/go/eventhandler/EventHandler2.go
+
+------
+
+kless create frontendtype -t kafka -u 10.245.9.9:5000/klessfrontendkafka:1.0
+
+kless create frontend -f kafka-local -t kafka -i "KLESS_FRONTEND_BOOTSTRAP_SERVERS=10.245.1.2:9092,KLESS_FRONTEND_TOPICS=test,KLESS_FRONTEND_GROUPID=kubernetes-master"
+
+kless create handler -e go-kafka-handler1 -b go-1.7.4 -f kafka-local -s examples/go/eventhandler/EventHandler2.go
+
+------
+
+kless create frontendtype -t nats -u 10.246.6.7:5000/klessfrontendnats:1.0
+
+kless create frontend -f nats-local -t nats -i "KLSS_FRONTEND_NATS_URL=nats:/10.245.1.2:4222,KLESS_FRONTEND_SUBJECT=foo"
+
+kless create builder -b go-1.7.4 -u 10.246.6.7:5000/eventhandlerbuildergo:1.3 -i "KlessInterface=pkg/interface/klessgo/Interface.go,InvokeEventHandler=pkg/invoke/InvokeEventHandler.go"
+
+kless create handler -e go-nats-handler1 -b go-1.7.4 -f nats-local -s examples/go/eventhandler/EventHandler2.go

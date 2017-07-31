@@ -5,7 +5,7 @@ import (
 	"io"
 
 	cmdutil "github.com/paalth/kless/pkg/kless/cmd/util"
-	//	kubelessapi "github.com/paalth/kless/pkg/klessserver/grpc"
+	//	klessapi "github.com/paalth/kless/pkg/klessserver/grpc"
 
 	"github.com/spf13/cobra"
 )
@@ -47,10 +47,10 @@ func RunUpdateEventHandlerBuilder(f cmdutil.Factory, out io.Writer, cmd *cobra.C
 			log.Fatalf("did not connect: %v", err)
 		}
 		defer conn.Close()
-		c := kubelessapi.NewKubelessAPIClient(conn)
+		c := klessapi.NewKlessAPIClient(conn)
 
 		// Contact the server and print out its response.
-		r, err := c.CreateEventHandler(context.Background(), &kubelessapi.CreateEventHandlerRequest{EventHandlerName: eventHandlerName,
+		r, err := c.CreateEventHandler(context.Background(), &klessapi.CreateEventHandlerRequest{EventHandlerName: eventHandlerName,
 			EventHandlerNamespace: eventHandlerNamespace,
 			EventHandlerBuilder:   "go",
 			EventHandlerSource:    "sourceUrl",

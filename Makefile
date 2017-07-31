@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 MAKEFLAGS += --no-builtin-rules
 
-export REPO=10.246.6.7:5000
+export REPO=192.168.1.12:32768
 
 all:
 	build-tools/build.sh
@@ -14,16 +14,16 @@ undeploy-registry:
 	kubectl delete -f prereqs/repository
 
 deploy-server:
-	kubectl create -f deploy/kubelessserver/kubelessserver-rc.yaml
-	kubectl create -f deploy/kubelessserver/kubelessserver-svc.yaml
-	kubectl describe svc kubeless-server -n kubeless
+	kubectl create -f deploy/klessserver/klessserver-rc.yaml
+	kubectl create -f deploy/klessserver/klessserver-svc.yaml
+	kubectl describe svc kless-server -n kless
 
 redeploy-server:
-	kubectl delete -f deploy/kubelessserver/kubelessserver-rc.yaml
-	kubectl delete -f deploy/kubelessserver/kubelessserver-svc.yaml
-	kubectl create -f deploy/kubelessserver/kubelessserver-rc.yaml
-	kubectl create -f deploy/kubelessserver/kubelessserver-svc.yaml
-	kubectl describe svc kubeless-server -n kubeless
+	kubectl delete -f deploy/klessserver/klessserver-rc.yaml
+	kubectl delete -f deploy/klessserver/klessserver-svc.yaml
+	kubectl create -f deploy/klessserver/klessserver-rc.yaml
+	kubectl create -f deploy/klessserver/klessserver-svc.yaml
+	kubectl describe svc kless-server -n kless
 
 genrpc:
 	build-tools/genrpc.sh

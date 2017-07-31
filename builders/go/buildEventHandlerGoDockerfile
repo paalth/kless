@@ -1,0 +1,7 @@
+FROM golang:1.7.4
+
+COPY InvokeEventHandler /InvokeEventHandler
+
+EXPOSE 8080
+
+CMD ["/InvokeEventHandler"]

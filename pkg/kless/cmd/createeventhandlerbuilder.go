@@ -30,7 +30,7 @@ func NewCmdCreateEventHandlerBuilder(f cmdutil.Factory, out io.Writer) *cobra.Co
 	return cmd
 }
 
-// RunCreateEventHandlerBuilder executes the registration of a new event handler builder on the kubeless server
+// RunCreateEventHandlerBuilder executes the registration of a new event handler builder on the kless server
 func RunCreateEventHandlerBuilder(f cmdutil.Factory, out io.Writer, cmd *cobra.Command) error {
 
 	address, err := cmdutil.GetServerAddress(cmd)

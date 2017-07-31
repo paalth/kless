@@ -1,0 +1,11 @@
+/kless/builders/<event handler builder name> - value = event handler builder image repository URL
+
+/kless/buildinfo/<event handler builder name>/<build info name> - value = build info source code
+
+/kless/source/<event handler uuid> - value = event handler source code
+
+/kless/handlers/<event handler name> - value = event handler info encoded as JSON
+
+/kless/frontendtypes/<frontend type name> - value = frontend image repository URL
+
+/kless/frontend/<frontend name> - value = frontend info encoded as JSON

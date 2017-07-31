@@ -1,0 +1,8 @@
+apiVersion: "etcd.coreos.com/v1beta1"
+kind: "Cluster"
+metadata:
+  name: "kless-etcd"
+  namespace: kless
+spec:
+  size: 1
+  version: "v3.1.2"

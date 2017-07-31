@@ -1,0 +1,11 @@
+apiVersion: v1
+description: Kless Registry - storage for Kless images
+name: kless-registry
+keywords:
+  - serverless
+home: github.com/paalth/kless
+maintainers:
+  - name: Paal Thorstensen
+    email: paal@thorstensen.org
+version: 0.0.1
+appVersion: 0.0.1

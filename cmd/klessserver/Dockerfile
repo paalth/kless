@@ -1,0 +1,16 @@
+FROM scratch
+
+ARG KLESS_MAINTAINER
+ARG KLESS_VERSION
+
+MAINTAINER $KLESS_MAINTAINER
+
+LABEL version=$KLESS_VERSION
+
+COPY klessserver /klessserver
+
+EXPOSE 50551
+EXPOSE 8010
+
+CMD ["/klessserver"]
+

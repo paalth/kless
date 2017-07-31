@@ -4,7 +4,7 @@
 # Description 
 `kless` is a simple "serverless" framework that supports push & pull events with event handlers written in mainly typed languages.
 
-It is a native Kubernetes framework as it attempts to use as many existing Kubernetes features as possible, and it is a naive framework as it currently goes about it's business in the simplest possible way that could conceivably work.
+It is a native Kubernetes framework as it attempts to use existing Kubernetes features to implement functionality where possible, and it is a naive framework as it currently does everything in the simplest possible way that could conceivably work.
 
 # Concepts
 Currently event handlers can be written in the following languages:
@@ -33,6 +33,8 @@ The **context** is a map of strings that contain information about the event han
 
 The **request** and **response** are both simple objects that have two fields. The first field is a map of string that contains the request/response headers, and the second field is a byte array containing the request/response body.
 
+Usage of the **response** object is optional, and is only applicable if you want to implement a request/reply event handler. If you only want to implement a one-way event handler just ignore the **response** object. 
+
 # Usage
 
 To create an event handler from the CLI run a command of the following format:
@@ -46,6 +48,8 @@ For example to create an event handler implemented in Go from a local file with 
 Similary, if you want to create an event handler implemented in Java from a local file that would pull events from Kafka:
 
 ```kless create handler -e java-kafka-handler1 -b java-8u111 -f kafka-local -s EventHandler.java```
+
+These usage examples of course assumes a frontend have been created previously.
 
 # Examples
 
@@ -68,6 +72,8 @@ func (t EventHandler) Handler(c *kl.Context, resp *kl.Response, req *kl.Request)
 }
 ```
 
+For now the event handler has to be a method on an EventHandler struct, but this will change in the future.
+
 The following is an example of the simplest possible event handler written in Java:
 
 ```
@@ -83,6 +89,8 @@ class EventHandler1 implements EventHandlerInterface {
 
 }
 ```
+
+For now the event handler has to be in the io.kless package, but this will also change in the future. 
 
 The following is an example of a simplistic event handler written in Go that dumps incoming HTTP PUT or POST requests into a PostgreSQL table:
 
@@ -181,6 +189,13 @@ func insertIntoPostgreSQLDB(host string, port int, username string, password str
 - A **etcd-operator** which manages an **etcd** instance where all **kless** state is stored
 - An InfluxDB instance where event handler stats are stored
 - A Grafana instance that can be used to display stats in InfluxDB
+
+# Installation
+To install the `kless` server components clone this repo and run install.sh in the helm directory (this assumes helm is installed & available). If you want to modify any installation parameters either modify the content of install.sh or helm/kless/values.yaml. Installation of the server components will not install any frontend types or event handler builders.
+
+To install the `kless` CLI download a copy off the releases page or build it from source.
+
+After the helm installation is completed and you have the `kless` CLI available add some pre-defined frontend types and event handler builders by running conf.sh also located in the helm directory.
 
 # Status
 

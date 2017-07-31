@@ -1,0 +1,13 @@
+dependencies:
+  - name: kless-registry
+    version: 0.0.1
+    repository: http://storage.googleapis.com/kubernetes-charts
+  - name: etcd-operator
+    version: 0.4.2
+    repository: http://storage.googleapis.com/kubernetes-charts
+  - name: influxdb
+    version: 0.4.2
+    repository: http://storage.googleapis.com/kubernetes-charts
+  - name: grafana
+    version: 0.4.1
+    repository: http://storage.googleapis.com/kubernetes-charts
