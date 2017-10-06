@@ -9,7 +9,7 @@ KLESS_ROOT=$(dirname "${BASH_SOURCE}")/..
 IMGNAME=klessserver
 VER=0.0.1
 
-TAG=$REPO/$IMGNAME:$VER
+TAG=$DEST_REPO/$IMGNAME:$VER
 
 echo $KLESS_ROOT
 

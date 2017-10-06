@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kless-server
+  namespace: kless
+spec:
+  replicas: 1
+  selector:
+    app: kless-server
+  template:
+    metadata:
+      name: kless-server
+      namespace: kless
+      labels:
+        app: kless-server
+    spec:
+      containers:
+      - name: kless-server
+        image: 10.246.6.7:5000/klessserver:0.0.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 50051
+          name: api
+          protocol: TCP
+        - containerPort: 8010
+          name: etcd
+          protocol: TCP

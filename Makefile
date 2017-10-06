@@ -2,7 +2,7 @@
 SHELL := /bin/bash
 MAKEFLAGS += --no-builtin-rules
 
-export REPO=192.168.1.12:32768
+export DEST_REPO=192.168.1.12:32768
 
 all:
 	build-tools/build.sh
@@ -33,6 +33,9 @@ client:
 	
 ehb-go:
 	build-tools/ehbgo.sh
+
+ehb-go-fedora:
+	build-tools/ehbgo-fedora.sh
 
 ehb-java:
 	build-tools/ehbjava.sh

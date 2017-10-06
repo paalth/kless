@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kless-registry-v0
+  namespace: kless
+  labels:
+    k8s-app: kless-registry
+    version: v0
+spec:
+  replicas: 1
+  selector:
+    k8s-app: kless-registry
+    version: v0
+  template:
+    metadata:
+      labels:
+        k8s-app: kless-registry
+        version: v0
+    spec:
+      containers:
+      - name: registry
+        image: $SRC_REGISTRY/registry:2.5.1
+        resources:
+          # keep request = limit to keep this container in guaranteed class
+          limits:
+            cpu: 100m
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: REGISTRY_HTTP_ADDR
+          value: :5000
+        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+          value: /var/lib/registry
+        volumeMounts:
+        - name: image-store
+          mountPath: /var/lib/registry
+        ports:
+        - containerPort: 5000
+          name: registry
+          protocol: TCP
+      volumes:
+      - name: image-store
+        persistentVolumeClaim:
+          claimName: kless-registry-pvc

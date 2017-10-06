@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kless
+    task: apiserver
+  name: kless-server
+  namespace: kless
+spec:
+  ports:
+    - name: api
+      port: 50051
+      protocol: TCP
+    - name: etcd
+      port: 8010
+      protocol: TCP
+  selector:
+    app: kless-server
+  type: NodePort
+
