@@ -6,6 +6,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 make client
+                echo 'Build complete'
             }
         }
         stage('Test') {
