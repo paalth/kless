@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                make client
+                sh 'make client'
                 echo 'Build complete'
             }
         }
