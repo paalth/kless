@@ -19,7 +19,7 @@ mv klessserver cmd/klessserver
 
 cd cmd/klessserver
 
-sudo docker login -u $DEST_REPO_USERNAME -p $DEST_REPO_PASSWORD $DEST_REPO
+sudo docker login -u $DEST_REPO_USERNAME -p "$DEST_REPO_PASSWORD" $DEST_REPO
 sudo docker build -f Dockerfile --build-arg KLESS_VERSION=0.0.1 --build-arg KLESS_MAINTAINER=paal@thorstensen.org -t $TAG .
 sudo docker push $TAG
 
