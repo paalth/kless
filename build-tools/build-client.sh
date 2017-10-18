@@ -1,3 +1,3 @@
 #!/bin/bash
 
-go install cmd/kubeless/kubeless.go
+go install cmd/kless/kless.go
