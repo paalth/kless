@@ -14,7 +14,7 @@ pipeline {
                 sh 'printenv | sort'
                 sh 'rm -rf $GOPATH/*'
                 sh 'mkdir -p $GOPATH/src/$REPO_NAME'
-                sh 'ln -svf * $GOPATH/src/$REPO_NAME'
+                sh 'mv * $GOPATH/src/$REPO_NAME'
                 sh 'cd $GOPATH/src/$REPO_NAME; make client'
                 echo 'Build complete'
             }
