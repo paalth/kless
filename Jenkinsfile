@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'printenv'
-                sh 'rm -rf ${env.GOPATH}
+                sh 'rm -rf ${env.GOPATH}'
                 sh 'mkdir -p ${env.GOPATH}/src/${env.REPO_NAME}'
                 sh 'ln -svf * ${env.GOPATH}/src/${env.REPO_NAME}'
                 sh 'cd ${env.GOPATH}/src/${env.REPO_NAME}'
