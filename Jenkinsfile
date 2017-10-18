@@ -4,7 +4,7 @@ pipeline {
     environment {
       REPO_NAME = 'github.com/paalth/kless'
       GOPATH = '/opt/go'
-      GOBIN = '$GOPATH/bin'
+      GOBIN = '/opt/go/bin'
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Building..'
                 sh 'printenv | sort'
-                sh 'rm -rf $GOPATH'
+                sh 'rm -rf $GOPATH/*'
                 sh 'mkdir -p $GOPATH/src/$REPO_NAME'
                 sh 'ln -svf * $GOPATH/src/$REPO_NAME'
                 sh 'cd $GOPATH/src/$REPO_NAME'
