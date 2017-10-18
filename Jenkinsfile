@@ -10,13 +10,16 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
-                sh 'printenv | sort'
-                sh 'rm -rf $GOPATH/*'
-                sh 'mkdir -p $GOPATH/src/$REPO_NAME'
-                sh 'mv * $GOPATH/src/$REPO_NAME'
-                sh 'cd $GOPATH/src/$REPO_NAME; make client'
-                echo 'Build complete'
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DEST_REPO_CREDENTIALS', usernameVariable: 'DEST_REPO_USERNAME', passwordVariable: 'DEST_REPO_PASSWORD']]) {
+                   echo 'Building..'
+                   sh 'printenv | sort'
+                   sh 'rm -rf $GOPATH/*'
+                   sh 'mkdir -p $GOPATH/src/$REPO_NAME'
+                   sh 'mv * $GOPATH/src/$REPO_NAME'
+                   sh 'cd $GOPATH/src/$REPO_NAME; make client'
+                   sh 'cd $GOPATH/src/$REPO_NAME; make'
+                   echo 'Build complete'
+                }
             }
         }
 

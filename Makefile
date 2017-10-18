@@ -2,8 +2,6 @@
 SHELL := /bin/bash
 MAKEFLAGS += --no-builtin-rules
 
-export DEST_REPO=192.168.1.12:32768
-
 all:
 	build-tools/build.sh
 
