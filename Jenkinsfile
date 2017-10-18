@@ -11,11 +11,11 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'printenv'
-                sh 'rm -rf ${env.GOPATH}'
-                sh 'mkdir -p ${env.GOPATH}/src/${env.REPO_NAME}'
-                sh 'ln -svf * ${env.GOPATH}/src/${env.REPO_NAME}'
-                sh 'cd ${env.GOPATH}/src/${env.REPO_NAME}'
+                sh 'printenv | sort'
+                sh 'rm -rf $GOPATH'
+                sh 'mkdir -p $GOPATH/src/$REPO_NAME'
+                sh 'ln -svf * $GOPATH/src/$REPO_NAME'
+                sh 'cd $GOPATH/src/$REPO_NAME'
                 sh 'make client'
                 echo 'Build complete'
             }
