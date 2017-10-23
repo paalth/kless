@@ -16,7 +16,11 @@ pipeline {
                    sh 'rm -rf $GOPATH/*'
                    sh 'mkdir -p $GOPATH/src/$REPO_NAME'
                    sh 'mv * $GOPATH/src/$REPO_NAME'
+
+                   echo 'Build kless CLI'
                    sh 'cd $GOPATH/src/$REPO_NAME; make client'
+
+                   echo 'Build kless server'
                    sh 'cd $GOPATH/src/$REPO_NAME; make'
                    echo 'Build complete'
                 }
@@ -32,6 +36,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+
+                echo 'Deploy kless CLI'
+
+                echo 'Deploy kless server'
+
+                echo 'Deploy complete'
             }
         }
     }
