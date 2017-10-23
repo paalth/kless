@@ -30,6 +30,8 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing..'
+                echo 'Tests TBD...'
+                echo 'Test complete'
             }
         }
 
