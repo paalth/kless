@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: kless-server
+  namespace: KLESS_NAMESPACE
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: kless-server
+      namespace: KLESS_NAMESPACE
+      labels:
+        app: kless-server
+    spec:
+      containers:
+      - name: kless-server
+        image: DEST_REPO/klessv1/klessserver:BUILD_ID
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 50051
+          name: api
+          protocol: TCP
+        - containerPort: 8010
+          name: etcd
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kless
+    task: apiserver
+  name: kless-server
+  namespace: KLESS_NAMESPACE
+spec:
+  ports:
+    - name: api
+      port: 50051
+      protocol: TCP
+    - name: etcd
+      port: 8010
+      protocol: TCP
+  selector:
+    app: kless-server
+  type: NodePort
+

@@ -1,8 +1,20 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: kless-registry-pvc
+  namespace: KLESS_NAMESPACE
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: v1
 kind: ReplicationController
 metadata:
   name: kless-registry-v0
-  namespace: kless
+  namespace: KLESS_NAMESPACE
   labels:
     k8s-app: kless-registry
     version: v0
@@ -19,7 +31,7 @@ spec:
     spec:
       containers:
       - name: registry
-        image: $SRC_REGISTRY/registry:2.5.1
+        image: KLESS_SRC_REGISTRY/registry:2.5.1
         resources:
           # keep request = limit to keep this container in guaranteed class
           limits:
@@ -44,3 +56,19 @@ spec:
       - name: image-store
         persistentVolumeClaim:
           claimName: kless-registry-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kless-registry
+  namespace: KLESS_NAMESPACE
+  labels:
+    app: kless
+    task: registry
+spec:
+  selector:
+    k8s-app: kless-registry
+  ports:
+  - name: registry
+    port: 5000
+    protocol: TCP

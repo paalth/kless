@@ -42,6 +42,11 @@ pipeline {
                 echo 'Deploy kless CLI'
 
                 echo 'Deploy kless server'
+                sh 'kubectl config set-credentials k8s-user --client-certificate=$K8S_CLIENT_CERT_PATH --client-key=$K8S_CLIENT_KEY_PATH'
+                sh 'kubectl config set-cluster k8s-cluster --insecure-skip-tls-verify=true --server=$K8S_SERVER_URL'
+                sh 'kubectl config set-context k8s --cluster=k8s-cluster --user=k8s-user --namespace=$KLESS_NAMESPACE'
+                sh 'kubectl config use-context k8s'
+                sh 'kubectl set image kless/kless-server kless-server=$DEST_REPO/klessv1/klessserver:$BUILD_ID'
 
                 echo 'Deploy complete'
             }
