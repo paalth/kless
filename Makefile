@@ -11,7 +11,7 @@ client:
 genrpc:
 	build-tools/genrpc.sh
 
-install-prereqs: create-ns create-imagepullsecrets deploy-registry deploy-etcd
+install-prereqs: create-ns create-imagepullsecrets deploy-registry deploy-etcd deploy-influxdb deploy-grafana
 	echo "Installation of prerequisites complete"
 
 uninstall-prereqs: delete-ns
@@ -49,14 +49,34 @@ undeploy-registry:
 	rm /tmp/kless-registry.yaml
 
 deploy-etcd:
-	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/etcd/kless-etcd.yaml > /tmp/kless-etcd.yaml
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY_QUAY/${KLESS_SRC_REGISTRY_QUAY}/g" deploy/prereqs/etcd/kless-etcd.yaml > /tmp/kless-etcd.yaml
 	kubectl create -f /tmp/kless-etcd.yaml
 	rm /tmp/kless-etcd.yaml
 
 undeploy-etcd:
-	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/etcd/kless-etcd.yaml > /tmp/kless-etcd.yaml
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY_QUAY/${KLESS_SRC_REGISTRY_QUAY}/g" deploy/prereqs/etcd/kless-etcd.yaml > /tmp/kless-etcd.yaml
 	kubectl delete -f /tmp/kless-etcd.yaml
 	rm /tmp/kless-etcd.yaml
+
+deploy-influxdb:
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/influxdb/kless-influxdb.yaml > /tmp/kless-influxdb.yaml
+	kubectl create -f /tmp/kless-influxdb.yaml
+	rm /tmp/kless-influxdb.yaml
+
+undeploy-influxdb:
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/influxdb/kless-influxdb.yaml > /tmp/kless-influxdb.yaml
+	kubectl delete -f /tmp/kless-influxdb.yaml
+	rm /tmp/kless-influxdb.yaml
+
+deploy-grafana:
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY_GCR/${KLESS_SRC_REGISTRY_GCR}/g" deploy/prereqs/grafana/kless-grafana.yaml > /tmp/kless-grafana.yaml
+	kubectl create -f /tmp/kless-grafana.yaml
+	rm /tmp/kless-grafana.yaml
+
+undeploy-grafana:
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY_GCR/${KLESS_SRC_REGISTRY_GCR}/g" deploy/prereqs/influxdb/kless-grafana.yaml > /tmp/kless-grafana.yaml
+	kubectl delete -f /tmp/kless-grafana.yaml
+	rm /tmp/kless-grafana.yaml
 
 deploy-server:
 	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/DEST_REPO/${DEST_REPO}/g" -e "s/BUILD_ID/${BUILD_ID}/g" deploy/kless-server/kless-server.yaml > /tmp/kless-server.yaml

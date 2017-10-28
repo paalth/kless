@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kless-influxdb
+  namespace: KLESS_NAMESPACE
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kless-influxdb
+    spec:
+      volumes:
+      - name: influxdb-storage
+        emptyDir: {}
+      containers:
+      - name: influxdb
+        image: KLESS_SRC_REGISTRY/influxdb:1.1
+        volumeMounts:
+        - mountPath: /data
+          name: influxdb-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kless
+    task: eventdata
+  name: kless-influxdb
+  namespace: KLESS_NAMESPACE
+spec:
+  ports:
+  - name: api
+    port: 8086
+    targetPort: 8086
+  selector:
+    app: kless-influxdb
+  type: NodePort
+
