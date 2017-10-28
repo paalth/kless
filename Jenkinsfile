@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DEST_REPO_CREDENTIALS', usernameVariable: 'DEST_REPO_USERNAME', passwordVariable: 'DEST_REPO_PASSWORD']]) {
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DEST_REGISTRY_CREDENTIALS', usernameVariable: 'DEST_REGISTRY_USERNAME', passwordVariable: 'DEST_REGISTRY_PASSWORD']]) {
                    echo 'Building..'
                    sh 'printenv | sort'
                    sh 'rm -rf $GOPATH/*'
@@ -46,7 +46,7 @@ pipeline {
                 sh 'kubectl config set-cluster k8s-cluster --insecure-skip-tls-verify=true --server=$K8S_SERVER_URL'
                 sh 'kubectl config set-context k8s --cluster=k8s-cluster --user=k8s-user --namespace=$KLESS_NAMESPACE'
                 sh 'kubectl config use-context k8s'
-                sh 'kubectl set image kless/kless-server kless-server=$DEST_REPO/klessv1/klessserver:$BUILD_ID'
+                sh 'kubectl set image deployment/kless-server kless-server=$DEST_REGISTRY/klessv1/klessserver:$BUILD_ID'
 
                 echo 'Deploy complete'
             }
