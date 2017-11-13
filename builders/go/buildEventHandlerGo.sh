@@ -5,13 +5,13 @@ echo "Starting build of Go event handler"
 mkdir /go/src/eventhandler
 mkdir -p /go/src/github.com/paalth/kless/pkg/interface/klessgo
 
-echo "Downloading source file from kless server"
+echo "Downloading source files from kless server"
 
 wget $KLESS_SERVER/$KLESS_EVENT_HANDLER_SOURCE -O /go/src/eventhandler/EventHandler.go
 wget $KLESS_SERVER/$KLESS_INTERFACE_SOURCE -O /go/src/github.com/paalth/kless/pkg/interface/klessgo/Interface.go
 wget $KLESS_SERVER/$KLESS_ENTRYPOINT_SOURCE -O /go/src/InvokeEventHandler.go
 
-echo "Source downloaded"
+echo "Source files downloaded"
 
 export GOBIN=$GOPATH/bin
 

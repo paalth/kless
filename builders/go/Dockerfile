@@ -1,5 +1,12 @@
 FROM KLESS_SRC_REGISTRY/golang:1.7.4
 
+# This Dockerfile builds an image that is used to build event handler builders implemented in Go
+#
+# For now the procees to build builders is pretty simple and just uses a shell script
+# The shell script uses the Docker Engine client which obviously is a less than optimal solution
+#
+# All builders are invoked by a simple entrypoint called 'InvokeEventHandler' which is itself a small piece of Go code
+
 ARG KLESS_MAINTAINER
 ARG KLESS_VERSION
 
