@@ -19,10 +19,10 @@ sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS
 
 if [[ ! -z "$KLESS_DEST_REGISTRY_USERNAME" ]]; then
   echo "Logging into docker registry $KLESS_DEST_REGISTRY"
-  docker login -u $KLESS_DEST_REGISTRY_USERNAME -p $KLESS_DEST_REGISTRY_PASSWORD $KLESS_DEST_REGISTRY
+  sudo docker login -u $KLESS_DEST_REGISTRY_USERNAME -p $KLESS_DEST_REGISTRY_PASSWORD $KLESS_DEST_REGISTRY
 fi
-docker build -f Dockerfile.tmp --build-arg KLESS_VERSION=$BUILD_ID --build-arg KLESS_MAINTAINER=paal@thorstensen.org -t $TAG .
-docker push $TAG
+sudo docker build -f Dockerfile.tmp --build-arg KLESS_VERSION=$BUILD_ID --build-arg KLESS_MAINTAINER=paal@thorstensen.org -t $TAG .
+sudo docker push $TAG
 
 rm Dockerfile.tmp
 rm buildEventHandlerGoDockerfile.tmp
