@@ -14,8 +14,17 @@ spec:
     spec:
       containers:
       - name: kless-server
-        image: DEST_REPO/klessv1/klessserver:BUILD_ID
+        image: KLESS_DEST_REGISTRY_HOSTPORT/klessv1/klessserver:BUILD_ID
         imagePullPolicy: Always
+        env:
+          - name: SERVER_NAMESPACE
+            value: KLESS_NAMESPACE
+          - name: REGISTRY_USERNAME
+            value: KLESS_DEST_REGISTRY_USERNAME
+          - name: REGISTRY_PASSWORD
+            value: KLESS_DEST_REGISTRY_PASSWORD
+          - name: REGISTRY_HOSTPORT
+            value: KLESS_DEST_REGISTRY_HOSTPORT
         ports:
         - containerPort: 50051
           name: api

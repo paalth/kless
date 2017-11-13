@@ -3,6 +3,7 @@ package servicehandler
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
@@ -50,21 +51,23 @@ func (s *ServiceHandler) CreateEventHandler(e *EventHandlerInfo, f *EventHandler
 		log.Fatal(err)
 	}
 
-	klessRepo := "kless-registry.kless:5000"
+	klessServer := "kless-server." + os.Getenv("SERVER_NAMESPACE") + ":8010"
+	klessRepo := "kless-registry." + os.Getenv("SERVER_NAMESPACE") + ":5000"
 
 	jobInfo := &k.JobInfo{
 		JobName:             getJobName(e),
 		Namespace:           e.Namespace,
 		Image:               e.EventHandlerBuilderURL,
+		KlessServer:         klessServer,
 		KlessRepo:           klessRepo,
 		EventHandlerName:    e.Name,
 		EventHandlerVersion: e.Version,
-		EventHandlerSource:  "kless-server.kless:8010/etcd?op=getsource&key=" + e.ID,
-		InterfaceSource:     "kless-server.kless:8010/etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=KlessInterface",
-		EntrypointSource:    "kless-server.kless:8010/etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=InvokeEventHandler",
-		ContextSource:       "kless-server.kless:8010/etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ContextSource",
-		RequestSource:       "kless-server.kless:8010/etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=RequestSource",
-		ResponseSource:      "kless-server.kless:8010/etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ResponseSource",
+		EventHandlerSource:  "etcd?op=getsource&key=" + e.ID,
+		InterfaceSource:     "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=KlessInterface",
+		EntrypointSource:    "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=InvokeEventHandler",
+		ContextSource:       "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ContextSource",
+		RequestSource:       "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=RequestSource",
+		ResponseSource:      "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ResponseSource",
 	}
 
 	fmt.Printf("Creating job\n")

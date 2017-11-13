@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 
 	"github.com/paalth/kless/pkg/etcdinterface"
 	apiserver "github.com/paalth/kless/pkg/klessserver/apiserver"
@@ -16,7 +17,7 @@ import (
 
 // Run starts the GRPC server functionality....
 func Run() error {
-	go StartEtcdContentServer()
+	go StartServer()
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -30,11 +31,39 @@ func Run() error {
 	return nil
 }
 
-// StartEtcdContentServer starts the REST etcd content serving functionality...
-func StartEtcdContentServer() {
-	etcdContextServerMux := http.NewServeMux()
-	etcdContextServerMux.HandleFunc("/etcd", etcdHandler)
-	log.Fatal(http.ListenAndServe("0.0.0.0:8010", etcdContextServerMux))
+// StartServer starts the REST etcd content and configuration serving functionality...
+func StartServer() {
+	serverMux := http.NewServeMux()
+	serverMux.HandleFunc("/etcd", etcdHandler)
+	serverMux.HandleFunc("/cfg", cfgHandler)
+	log.Fatal(http.ListenAndServe("0.0.0.0:8010", serverMux))
+}
+
+func cfgHandler(w http.ResponseWriter, r *http.Request) {
+	op := r.URL.Query().Get("op")
+	key := r.URL.Query().Get("key")
+
+	fmt.Printf("cfg handler, op = %s key = %s\n", op, key)
+
+	switch op {
+	case "get":
+		switch key {
+		case "REGISTRY_USERNAME":
+			value := os.Getenv("REGISTRY_USERNAME")
+			fmt.Fprintf(w, "%s", value)
+		case "REGISTRY_PASSWORD":
+			value := os.Getenv("REGISTRY_PASSWORD")
+			fmt.Fprintf(w, "%s", value)
+		case "REGISTRY_HOSTPORT":
+			value := os.Getenv("REGISTRY_HOSTPORT")
+			fmt.Fprintf(w, "%s", value)
+		default:
+			fmt.Fprintf(w, "unsupported key parameter = %s", key)
+		}
+	default:
+		fmt.Fprintf(w, "op query parameter must currently be 'get'")
+	}
+
 }
 
 func etcdHandler(w http.ResponseWriter, r *http.Request) {

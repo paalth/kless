@@ -1,0 +1,9 @@
+Images to include in offline tarball:
+
+KLESS_SRC_REGISTRY_QUAY/coreos/etcd/v3.2.9
+KLESS_SRC_REGISTRY/registry:2.5.1
+KLESS_SRC_REGISTRY/influxdb:1.1
+KLESS_SRC_REGISTRY_GCR/google_containers/heapster_grafana:v3.1.1
+
+KLESS_DEST_REGISTRY/klessv1/klessserver:BUILD_ID
+KLESS_DEST_REGISTRY/eventhandlerbuildergo_DOCKER_ENGINE_VER:BUILD_ID

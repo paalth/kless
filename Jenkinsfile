@@ -10,19 +10,28 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DEST_REGISTRY_CREDENTIALS', usernameVariable: 'DEST_REGISTRY_USERNAME', passwordVariable: 'DEST_REGISTRY_PASSWORD']]) {
-                   echo 'Building..'
-                   sh 'printenv | sort'
-                   sh 'rm -rf $GOPATH/*'
-                   sh 'mkdir -p $GOPATH/src/$REPO_NAME'
-                   sh 'mv * $GOPATH/src/$REPO_NAME'
+                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'DEST_REGISTRY_CREDENTIALS', usernameVariable: 'KLESS_DEST_REGISTRY_USERNAME', passwordVariable: 'KLESS_DEST_REGISTRY_PASSWORD']]) {
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'KLESS_SRC_REGISTRY_CREDENTIALS', usernameVariable: 'KLESS_SRC_REGISTRY_USERNAME', passwordVariable: 'KLESS_SRC_REGISTRY_PASSWORD']]) {
+                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'KLESS_SRC_REGISTRY_CREDENTIALS_QUAY', usernameVariable: 'KLESS_SRC_REGISTRY_QUAY_USERNAME', passwordVariable: 'KLESS_SRC_REGISTRY_QUAY_PASSWORD']]) {
+                            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'KLESS_SRC_REGISTRY_CREDENTIALS_GCR', usernameVariable: 'KLESS_SRC_REGISTRY_GCR_USERNAME', passwordVariable: 'KLESS_SRC_REGISTRY_GCR_PASSWORD']]) {
+                               echo 'Building..'
+                               sh 'printenv | sort'
+                               sh 'rm -rf $GOPATH/*'
+                               sh 'mkdir -p $GOPATH/src/$REPO_NAME'
+                               sh 'mv * $GOPATH/src/$REPO_NAME'
 
-                   echo 'Build kless CLI'
-                   sh 'cd $GOPATH/src/$REPO_NAME; make client'
+                               echo 'Build kless CLI'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make client'
 
-                   echo 'Build kless server'
-                   sh 'cd $GOPATH/src/$REPO_NAME; make'
-                   echo 'Build complete'
+                               echo 'Build kless server'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make'
+
+                               echo 'Build kless Go builder'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make ehb-go'
+                               echo 'Build complete'
+                            }
+                        }
+                    }
                 }
             }
         }

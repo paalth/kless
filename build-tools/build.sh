@@ -7,9 +7,8 @@ set -o pipefail
 KLESS_ROOT=$(dirname "${BASH_SOURCE}")/..
 
 IMGNAME=klessv1/klessserver
-VER=0.0.1
 
-TAG=$DEST_REPO/$IMGNAME:$BUILD_ID
+TAG=$KLESS_DEST_REGISTRY/$IMGNAME:$BUILD_ID
 
 echo $KLESS_ROOT
 
@@ -19,7 +18,7 @@ mv klessserver cmd/klessserver
 
 cd cmd/klessserver
 
-sudo docker login -u $DEST_REGISTRY_USERNAME -p "$DEST_REGISTRY_PASSWORD" $DEST_REGISTRY
+sudo docker login -u $KLESS_DEST_REGISTRY_USERNAME -p "$KLESS_DEST_REGISTRY_PASSWORD" $KLESS_DEST_REGISTRY
 sudo docker build -f Dockerfile --build-arg KLESS_VERSION=0.0.1 --build-arg KLESS_MAINTAINER=paal@thorstensen.org -t $TAG .
 sudo docker push $TAG
 

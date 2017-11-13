@@ -2,6 +2,8 @@
 SHELL := /bin/bash
 MAKEFLAGS += --no-builtin-rules
 
+# TODO: do something smarter than sed...
+
 all:
 	build-tools/build.sh
 
@@ -35,8 +37,10 @@ delete-ns:
 
 create-imagepullsecrets:
 	kubectl create secret docker-registry src-registry-key --docker-server=${KLESS_SRC_REGISTRY} --docker-username=${KLESS_SRC_REGISTRY_USERNAME} --docker-password=${KLESS_SRC_REGISTRY_PASSWORD} --docker-email=${KLESS_SRC_REGISTRY_EMAIL} -n ${KLESS_NAMESPACE}
-	kubectl create secret docker-registry dest-registry-key --docker-server=${DEST_REPO} --docker-username=${DEST_REPO_USERNAME} --docker-password=${DEST_REPO_PASSWORD} --docker-email=${DEST_REPO_EMAIL} -n ${KLESS_NAMESPACE}
-	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "src-registry-key"}, {"name": "dest-registry-key"}]}' -n ${KLESS_NAMESPACE}
+	kubectl create secret docker-registry src-registry-key-quay --docker-server=${KLESS_SRC_REGISTRY_QUAY} --docker-username=${KLESS_SRC_REGISTRY_QUAY_USERNAME} --docker-password=${KLESS_SRC_REGISTRY_QUAY_PASSWORD} --docker-email=${KLESS_SRC_REGISTRY_QUAY_EMAIL} -n ${KLESS_NAMESPACE}
+	kubectl create secret docker-registry src-registry-key-gcr --docker-server=${KLESS_SRC_REGISTRY_GCR} --docker-username=${KLESS_SRC_REGISTRY_GCR_USERNAME} --docker-password=${KLESS_SRC_REGISTRY_GCR_PASSWORD} --docker-email=${KLESS_SRC_REGISTRY_GCR_EMAIL} -n ${KLESS_NAMESPACE}
+	kubectl create secret docker-registry dest-registry-key --docker-server=${KLESS_DEST_REGISTRY} --docker-username=${KLESS_DEST_REGISTRY_USERNAME} --docker-password=${KLESS_DEST_REGISTRY_PASSWORD} --docker-email=${KLESS_DEST_REGISTRY_EMAIL} -n ${KLESS_NAMESPACE}
+	kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "src-registry-key"}, {"name": "src-registry-key-quay"}, {"name": "src-registry-key-gcr"}, {"name": "dest-registry-key"}]}' -n ${KLESS_NAMESPACE}
 	
 deploy-registry:
 	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/registry/kless-registry.yaml > /tmp/kless-registry.yaml
@@ -62,6 +66,7 @@ deploy-influxdb:
 	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/influxdb/kless-influxdb.yaml > /tmp/kless-influxdb.yaml
 	kubectl create -f /tmp/kless-influxdb.yaml
 	rm /tmp/kless-influxdb.yaml
+	#curl -XPOST -G 'http://10.245.1.3:31734/query' --data-urlencode "q=CREATE DATABASE klessdb" -- k8s
 
 undeploy-influxdb:
 	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" deploy/prereqs/influxdb/kless-influxdb.yaml > /tmp/kless-influxdb.yaml
@@ -79,21 +84,18 @@ undeploy-grafana:
 	rm /tmp/kless-grafana.yaml
 
 deploy-server:
-	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/DEST_REPO/${DEST_REPO}/g" -e "s/BUILD_ID/${BUILD_ID}/g" deploy/kless-server/kless-server.yaml > /tmp/kless-server.yaml
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_DEST_REGISTRY_HOSTPORT/${KLESS_DEST_REGISTRY}/g" -e "s/KLESS_DEST_REGISTRY_USERNAME/${KLESS_DEST_REGISTRY_USERNAME}/g" -e "s/KLESS_DEST_REGISTRY_PASSWORD/${KLESS_DEST_REGISTRY_PASSWORD}/g" -e "s/BUILD_ID/${BUILD_ID}/g" deploy/kless-server/kless-server.yaml > /tmp/kless-server.yaml
 	kubectl create -f /tmp/kless-server.yaml
 	rm /tmp/kless-server.yaml
 	kubectl describe svc kless-server -n ${KLESS_NAMESPACE}
 
 undeploy-server:
-	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/DEST_REPO/${DEST_REPO}/g" -e "s/BUILD_ID/${BUILD_ID}/g" deploy/kless-server/kless-server.yaml > /tmp/kless-server.yaml
+	sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_DEST_REGISTRY_HOSTPORT/${KLESS_DEST_REGISTRY}/g" -e "s/KLESS_DEST_REGISTRY_USERNAME/${KLESS_DEST_REGISTRY_USERNAME}/g" -e "s/KLESS_DEST_REGISTRY_PASSWORD/${KLESS_DEST_REGISTRY_PASSWORD}/g" -e "s/BUILD_ID/${BUILD_ID}/g" deploy/kless-server/kless-server.yaml > /tmp/kless-server.yaml
 	kubectl delete -f /tmp/kless-server.yaml
 	rm /tmp/kless-server.yaml
 
 ehb-go:
 	build-tools/ehbgo.sh
-
-ehb-go-fedora:
-	build-tools/ehbgo-fedora.sh
 
 ehb-java:
 	build-tools/ehbjava.sh

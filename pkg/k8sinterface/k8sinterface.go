@@ -27,6 +27,7 @@ type JobInfo struct {
 	JobName             string
 	Namespace           string
 	Image               string
+	KlessServer         string
 	KlessRepo           string
 	EventHandlerName    string
 	EventHandlerVersion string
@@ -271,6 +272,10 @@ func (k *K8sInterface) CreateJob(j *JobInfo) error {
 								},
 							},
 							Env: []apiv1.EnvVar{
+								apiv1.EnvVar{
+									Name:  "KLESS_SERVER",
+									Value: j.KlessServer,
+								},
 								apiv1.EnvVar{
 									Name:  "KLESS_REPO",
 									Value: j.KlessRepo,
