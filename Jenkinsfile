@@ -55,7 +55,7 @@ pipeline {
                 sh 'kubectl config set-cluster k8s-cluster --insecure-skip-tls-verify=true --server=$K8S_SERVER_URL'
                 sh 'kubectl config set-context k8s --cluster=k8s-cluster --user=k8s-user --namespace=$KLESS_NAMESPACE'
                 sh 'kubectl config use-context k8s'
-                sh 'kubectl set image deployment/kless-server kless-server=$DEST_REGISTRY/klessv1/klessserver:$BUILD_ID'
+                sh 'kubectl set image deployment/kless-server kless-server=$KLESS_DEST_REGISTRY/klessv1/klessserver:$BUILD_ID'
 
                 echo 'Deploy complete'
             }
