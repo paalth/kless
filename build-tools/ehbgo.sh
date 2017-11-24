@@ -1,14 +1,19 @@
 #!/bin/bash
 
 set -o errexit
-set -o nounset
 set -o pipefail
 
 KLESS_ROOT=$(dirname "${BASH_SOURCE}")/..
 
 echo $KLESS_ROOT
 
-TAG=$KLESS_DEST_REGISTRY/eventhandlerbuildergo_$DOCKER_ENGINE_VER:$BUILD_ID
+IMGNAME=klessv1/eventhandlerbuildergo_$DOCKER_ENGINE_VER
+
+TAG=$IMGNAME:$BUILD_ID
+
+if [[ ! -z "$KLESS_DEST_REGISTRY" ]]; then
+  TAG=$KLESS_DEST_REGISTRY/$TAG
+fi
 
 echo "Building image with tag $TAG"
 
