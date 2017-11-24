@@ -24,10 +24,11 @@ mv httpfrontend cmd/frontend/http
 cd cmd/frontend/http
 
 if [[ ! -z "$KLESS_SRC_REGISTRY" ]]; then
-  KLESS_SRC_REGISTRY=KLESS_SRC_REGISTRY/
+  sed -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}\//g" Dockerfile > Dockerfile.tmp
+else 
+  sed -e "s/KLESS_SRC_REGISTRY//g" Dockerfile > Dockerfile.tmp
 fi
 
-sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" Dockerfile > Dockerfile.tmp
 
 if [[ ! -z "$KLESS_DEST_REGISTRY_USERNAME" ]]; then
   echo "Logging into docker registry $KLESS_DEST_REGISTRY"

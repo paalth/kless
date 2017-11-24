@@ -20,11 +20,12 @@ echo "Building image with tag $TAG"
 cd builders/go
 
 if [[ ! -z "$KLESS_SRC_REGISTRY" ]]; then
-  KLESS_SRC_REGISTRY=KLESS_SRC_REGISTRY/
+  sed -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}\//g" -e "s/DOCKER_ENGINE_VER/${DOCKER_ENGINE_VER}/g" Dockerfile > Dockerfile.tmp
+  sed -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}\//g" buildEventHandlerGoDockerfile > buildEventHandlerGoDockerfile.tmp
+else 
+  sed -e "s/KLESS_SRC_REGISTRY//g" -e "s/DOCKER_ENGINE_VER/${DOCKER_ENGINE_VER}/g" Dockerfile > Dockerfile.tmp
+  sed -e "s/KLESS_SRC_REGISTRY//g" buildEventHandlerGoDockerfile > buildEventHandlerGoDockerfile.tmp
 fi
-
-sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" -e "s/DOCKER_ENGINE_VER/${DOCKER_ENGINE_VER}/g" Dockerfile > Dockerfile.tmp
-sed -e "s/KLESS_NAMESPACE/${KLESS_NAMESPACE}/g" -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}/g" buildEventHandlerGoDockerfile > buildEventHandlerGoDockerfile.tmp
 
 if [[ ! -z "$KLESS_DEST_REGISTRY_USERNAME" ]]; then
   echo "Logging into docker registry $KLESS_DEST_REGISTRY"
