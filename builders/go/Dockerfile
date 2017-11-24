@@ -1,4 +1,4 @@
-FROM KLESS_SRC_REGISTRY/golang:1.7.4
+FROM KLESS_SRC_REGISTRYgolang:1.7.4
 
 # This Dockerfile builds an image that is used to build event handler builders implemented in Go
 #

@@ -13,6 +13,8 @@ if [[ ! -z "$KLESS_DEST_REGISTRY" ]]; then
   TAG=$KLESS_DEST_REGISTRY/$TAG
 fi
 
+echo "Building image with tag $TAG"
+
 echo $KLESS_ROOT
 
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s" -a -installsuffix cgo -o klessserver cmd/klessserver/klessserver.go
