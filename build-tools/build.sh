@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -o errexit
-set -o nounset
 set -o pipefail
 
 KLESS_ROOT=$(dirname "${BASH_SOURCE}")/..
