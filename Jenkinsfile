@@ -29,6 +29,10 @@ pipeline {
                                echo 'Build kless Go builder'
                                sh 'cd $GOPATH/src/$REPO_NAME; make ehb-go'
                                echo 'Build complete'
+
+                               echo 'Build kless HTTP frontend'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make frontend-http'
+                               echo 'Build complete'
                             }
                         }
                     }
