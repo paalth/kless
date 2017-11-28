@@ -7,7 +7,7 @@ export KLESS_SRC_REGISTRY_USERNAME=
 export KLESS_SRC_REGISTRY_PASSWORD=
 export KLESS_SRC_REGISTRY_EMAIL=
 
-# Registry where prerequisite images will be pulled from normally hosted on Quay.io
+# Registry where prerequisite images will be pulled from normally hosted on quay.io
 export KLESS_SRC_REGISTRY_QUAY=quay.io
 export KLESS_SRC_REGISTRY_QUAY_USERNAME=
 export KLESS_SRC_REGISTRY_QUAY_PASSWORD=
@@ -35,4 +35,8 @@ export K8S_SERVER_URL=theurl
 # Version of Docker Engine used to build the builders
 export DOCKER_ENGINE_VER=1.11.1
 
+# Set manually if build not run by Jenkins
 export BUILD_ID=123
+
+# Set if build should send CLI to Google bucket
+#export KLESS_UPLOAD_CLI=true
