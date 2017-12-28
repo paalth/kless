@@ -1,4 +1,4 @@
-FROM KLESS_SRC_REGISTRYgolang:1.7.4
+FROM REGISTRY_HOSTPORTgolang:1.7.4
 
 COPY InvokeEventHandler /InvokeEventHandler
 

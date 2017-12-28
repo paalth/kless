@@ -18,13 +18,13 @@ spec:
         imagePullPolicy: Always
         env:
           - name: SERVER_NAMESPACE
-            value: KLESS_NAMESPACE
+            value: "KLESS_NAMESPACE"
           - name: REGISTRY_USERNAME
-            value: KLESS_DEST_REGISTRY_USERNAME
+            value: "KLESS_DEST_REGISTRY_USERNAME"
           - name: REGISTRY_PASSWORD
-            value: KLESS_DEST_REGISTRY_PASSWORD
+            value: "KLESS_DEST_REGISTRY_PASSWORD"
           - name: REGISTRY_HOSTPORT
-            value: KLESS_DEST_REGISTRY_HOSTPORT
+            value: "KLESS_DEST_REGISTRY_HOSTPORT"
         ports:
         - containerPort: 50051
           name: api

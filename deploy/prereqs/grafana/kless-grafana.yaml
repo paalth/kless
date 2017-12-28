@@ -15,7 +15,7 @@ spec:
         k8s-app: grafana
     spec: 
       containers: 
-        - image: KLESS_SRC_REGISTRY_GCR/google_containers/heapster_grafana:v3.1.1
+        - image: KLESS_SRC_REGISTRY/grafana/grafana:3.1.1
           name: grafana
           env:
           resources:

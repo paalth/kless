@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: etcd
-        image: KLESS_SRC_REGISTRY_QUAY/coreos/etcd/v3.2.9
+        image: KLESS_SRC_REGISTRY_QUAY/coreos/etcd:v3.2.9
         volumeMounts:
         - name: datadir
           mountPath: /var/run/etcd

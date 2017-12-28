@@ -22,7 +22,7 @@ RUN apt-get -y update && \
     apt-get install -y docker-engine=DOCKER_ENGINE_VER-0~jessie
 
 COPY buildEventHandlerGo.sh /tmp
-COPY buildEventHandlerGoDockerfile.tmp /tmp/Dockerfile
+COPY buildEventHandlerGoDockerfile /tmp/Dockerfile
 
 # Run command to build the Go event handler
 CMD ["/tmp/buildEventHandlerGo.sh"]

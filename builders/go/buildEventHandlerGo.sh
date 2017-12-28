@@ -44,13 +44,17 @@ REGISTRY_HOSTPORT=`curl "$KLESS_SERVER/cfg?op=get&key=REGISTRY_HOSTPORT"`
 
 echo "Registry info retrieved, registry = $REGISTRY_HOSTPORT, username = $REGISTRY_USERNAME"
 
+sed -e "s/REGISTRY_HOSTPORT/$REGISTRY_HOSTPORT/g" Dockerfile > Dockerfile.tmp
+
+echo "Dockerfile updated"
+
 if [[ ! -z "$REGISTRY_USERNAME"  ]]; then
   echo "Logging into Docker registry $REGISTRY_HOSTPORT"
   docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRY_HOSTPORT
 fi
 
 echo "Building image"
-docker build -t $TAG .
+docker build -f Dockerfile.tmp -t $TAG .
 
 echo "Pushing image to registry"
 docker push $TAG

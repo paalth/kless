@@ -21,10 +21,8 @@ cd builders/go
 
 if [[ ! -z "$KLESS_SRC_REGISTRY" ]]; then
   sed -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}\//g" -e "s/DOCKER_ENGINE_VER/${DOCKER_ENGINE_VER}/g" Dockerfile > Dockerfile.tmp
-  sed -e "s/KLESS_SRC_REGISTRY/${KLESS_SRC_REGISTRY}\//g" buildEventHandlerGoDockerfile > buildEventHandlerGoDockerfile.tmp
 else 
   sed -e "s/KLESS_SRC_REGISTRY//g" -e "s/DOCKER_ENGINE_VER/${DOCKER_ENGINE_VER}/g" Dockerfile > Dockerfile.tmp
-  sed -e "s/KLESS_SRC_REGISTRY//g" buildEventHandlerGoDockerfile > buildEventHandlerGoDockerfile.tmp
 fi
 
 if [[ ! -z "$KLESS_DEST_REGISTRY_USERNAME" ]]; then
@@ -35,6 +33,5 @@ sudo docker build -f Dockerfile.tmp --build-arg KLESS_VERSION=$BUILD_ID --build-
 sudo docker push $TAG
 
 rm Dockerfile.tmp
-rm buildEventHandlerGoDockerfile.tmp
 
 cd ../..
