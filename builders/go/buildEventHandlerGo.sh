@@ -44,7 +44,15 @@ REGISTRY_HOSTPORT=`curl "$KLESS_SERVER/cfg?op=get&key=REGISTRY_HOSTPORT"`
 
 echo "Registry info retrieved, registry = $REGISTRY_HOSTPORT, username = $REGISTRY_USERNAME"
 
-sed -e "s/REGISTRY_HOSTPORT/$REGISTRY_HOSTPORT/g" Dockerfile > Dockerfile.tmp
+if [[ ! -z "$REGISTRY_HOSTPORT" ]]; then
+  echo $REGISTRY_HOSTPORT | grep '/$'
+  if [[ $? -eq 0 ]]; then
+    REGISTRY_HOSTPORT=${REGISTRY_HOSTPORT%?};
+  fi
+  sed -e "s/REGISTRY_HOSTPORT/${REGISTRY_HOSTPORT}\//g" Dockerfile > Dockerfile.tmp
+else 
+  sed -e "s/REGISTRY_HOSTPORT//g" Dockerfile > Dockerfile.tmp
+fi
 
 echo "Dockerfile updated"
 
