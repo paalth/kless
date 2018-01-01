@@ -1,0 +1,7 @@
+FROM REGISTRY_HOSTPORTopenjdk:8u151-jdk-alpine
+
+COPY InvokeEventHandler.jar InvokeEventHandler.jar
+
+EXPOSE 8080
+
+CMD ["java", "-DklessEventHandlerClass=io.kless.EventHandler1", "-DklessEventHandlerPortNumber=8080", "-cp", "InvokeEventHandler.jar", "io.kless.InvokeEventHandler"]
