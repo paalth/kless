@@ -1,0 +1,11 @@
+FROM REGISTRY_HOSTPORTpython:3.6.4-alpine3.7
+
+COPY EventHandler1.py EventHandler1.py
+COPY InvokeEventHandler.py InvokeEventHandler.py
+COPY KlessContext.py KlessContext.py
+COPY KlessRequest.py KlessRequest.py
+COPY KlessResponse.py KlessResponse.py
+
+EXPOSE 8080
+
+CMD ["python", "InvokeEventHandler.py"]

@@ -70,6 +70,9 @@ ehb-go:
 ehb-java:
 	build-tools/ehbjava.sh
 
+ehb-python:
+	build-tools/ehbpython.sh
+
 frontend-utils:
 	build-tools/frontend-utils.sh
 
