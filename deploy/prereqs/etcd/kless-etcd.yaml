@@ -10,8 +10,8 @@ spec:
     requests:
       storage: 1Gi
 ---
-apiVersion: v1
-kind: ReplicationController
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   name: kless-etcd
   namespace: KLESS_NAMESPACE
@@ -19,10 +19,10 @@ metadata:
     k8s-app: kless-etcd
 spec:
   replicas: 1
-  selector:
-    k8s-app: kless-etcd
   template:
     metadata:
+      name: kless-etcd
+      namespace: KLESS_NAMESPACE
       labels:
         k8s-app: kless-etcd
     spec:

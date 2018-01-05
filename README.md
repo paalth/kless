@@ -8,8 +8,9 @@ It is a native Kubernetes framework as it attempts to use existing Kubernetes fe
 
 # Concepts
 Currently event handlers can be written in the following languages:
-- Go
 - Java
+- Go
+- Python
 
 However, event handlers can be written in any language that has an implemented "**event handler builder**". Event Handler Builders are responsible for compiling the event handler source code and turning it into images that can be deployed in Kubernetes pods. Event Handler Builders are themselves just images/containers registered with `kless` so in the future any other language can be supported. 
 
@@ -29,7 +30,7 @@ Currently the following pull methods are supported:
 
 `kless` event handlers implement a language-specific interface and the signature of the event handler consists of a **context**, a **request** and a **response**. 
 
-The **context** is a map of strings that contain information about the event handler.
+The **context** is a map of strings that contain information about the event handler and its runtime environment.
 
 The **request** and **response** are both simple objects that have two fields. The first field is a map of string that contains the request/response headers, and the second field is a byte array containing the request/response body.
 
@@ -53,6 +54,24 @@ These usage examples of course assumes a frontend have been created previously.
 
 # Examples
 
+The following is an example of the simplest possible event handler written in Java:
+
+```
+package io.kless;
+
+class EventHandler1 implements EventHandlerInterface {
+
+    public Response eventHandler(Context context, Request req) {
+        System.out.println("Inside event handler...");
+
+        return null;
+    }
+
+}
+```
+
+For now the event handler has to be in the io.kless package and have the signature shown above, but this will change in the future. 
+
 The following is an example of the simplest possible event handler written in Go:
 
 ```
@@ -72,27 +91,22 @@ func (t EventHandler) Handler(c *kl.Context, resp *kl.Response, req *kl.Request)
 }
 ```
 
-For now the event handler has to be a method on an EventHandler struct, but this will change in the future.
+For now the event handler has to be a method on an EventHandler struct as shown above, but this will also change in the future.
 
-The following is an example of the simplest possible event handler written in Java:
+The following is an example of the simplest possible event handler written in Python:
 
 ```
-package io.kless;
+import sys
 
-class EventHandler1 implements EventHandlerInterface {
-
-    public Response eventHandler(Context context, Request req) {
-        System.out.println("Inside event handler...");
-
-        return null;
-    }
-
-}
+class EventHandler1:
+    def eventHandler(self, context, request, response):
+        sys.stdout.write("Inside event handler example 1\n")
+        sys.stdout.flush()
 ```
 
-For now the event handler has to be in the io.kless package, but this will also change in the future. 
+For now the event handler has to have the signature show above (but again this will be relaxed at some later point in time).
 
-The following is an example of a simplistic event handler written in Go that dumps incoming HTTP PUT or POST requests into a PostgreSQL table:
+The following is an example of a simplistic event handler written in Go that dumps incoming HTTP PUT or POST requests into a PostgreSQL table (using hardcoded connection/auth information):
 
 ```
 package eventhandler

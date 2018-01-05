@@ -32,6 +32,9 @@ export K8S_CLIENT_CERT_PATH=pathtocacert
 export K8S_CLIENT_KEY_PATH=pathtoclientkey
 export K8S_SERVER_URL=theurl
 
+# Version of Kuberentes, needed to determine some API versions
+export K8S_VERSION=1.6
+
 # Version of Docker Engine used to build the builders
 export DOCKER_ENGINE_VER=1.11.1
 
