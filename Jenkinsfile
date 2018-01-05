@@ -34,8 +34,16 @@ pipeline {
                                sh 'cd $GOPATH/src/$REPO_NAME; make ehb-java'
                                echo 'Build complete'
 
+                               echo 'Build kless Python builder'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make ehb-python'
+                               echo 'Build complete'
+
                                echo 'Build kless HTTP frontend'
                                sh 'cd $GOPATH/src/$REPO_NAME; make frontend-http'
+                               echo 'Build complete'
+
+                               echo 'Build kless RabbitMQ frontend'
+                               sh 'cd $GOPATH/src/$REPO_NAME; make frontend-rabbitmq'
                                echo 'Build complete'
                             }
                         }
