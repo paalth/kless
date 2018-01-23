@@ -1,7 +1,15 @@
 FROM REGISTRY_HOSTPORTopenjdk:8u151-jdk-alpine
 
+ARG KLESS_CP
+
+ENV CP $KLESS_CP
+
 COPY InvokeEventHandler.jar InvokeEventHandler.jar
+
+RUN mkdir /klesslib
+
+COPY klesslib /klesslib
 
 EXPOSE 8080
 
-CMD ["java", "-DklessEventHandlerClass=io.kless.EventHandler1", "-DklessEventHandlerPortNumber=8080", "-cp", "InvokeEventHandler.jar", "io.kless.InvokeEventHandler"]
+CMD ["sh", "-c", "java -DklessEventHandlerClass=io.kless.EventHandler1 -DklessEventHandlerPortNumber=8080 -cp ${CP} io.kless.InvokeEventHandler"]

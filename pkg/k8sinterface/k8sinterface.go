@@ -37,6 +37,7 @@ type JobInfo struct {
 	ContextSource       string
 	RequestSource       string
 	ResponseSource      string
+	DependenciesURL     string
 }
 
 //DeploymentInfo contains parameters to create a Kubernetes Deployment
@@ -311,6 +312,10 @@ func (k *K8sInterface) CreateJob(j *JobInfo) error {
 								apiv1.EnvVar{
 									Name:  "KLESS_RESPONSE_SOURCE",
 									Value: j.ResponseSource,
+								},
+								apiv1.EnvVar{
+									Name:  "KLESS_DEPENDENCIES_URL",
+									Value: j.DependenciesURL,
 								},
 							},
 							Resources: apiv1.ResourceRequirements{

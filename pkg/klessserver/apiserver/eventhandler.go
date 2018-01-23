@@ -76,6 +76,7 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 		EventHandlerBuilder:    in.EventHandlerBuilder,
 		EventHandlerBuilderURL: eventHandlerBuilderURL,
 		Frontend:               in.EventHandlerFrontend,
+		DependenciesURL:        in.EventHandlerDependenciesURL,
 	}
 
 	etcdFrontendKey := "/kless/frontend/" + in.EventHandlerFrontend

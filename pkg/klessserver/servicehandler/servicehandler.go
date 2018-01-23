@@ -23,6 +23,7 @@ type EventHandlerInfo struct {
 	EventHandlerBuilder    string `json:"eventhandlerbuilder"`
 	EventHandlerBuilderURL string `json:"eventhandlerbuilderurl"`
 	Frontend               string `json:"frontend"`
+	DependenciesURL        string `json:"dependendiesurl"`
 }
 
 //EventHandlerFrontendInfo defines the frontend info
@@ -68,6 +69,7 @@ func (s *ServiceHandler) CreateEventHandler(e *EventHandlerInfo, f *EventHandler
 		ContextSource:       "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ContextSource",
 		RequestSource:       "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=RequestSource",
 		ResponseSource:      "etcd?op=get&builder=" + e.EventHandlerBuilder + "&key=ResponseSource",
+		DependenciesURL:     e.DependenciesURL,
 	}
 
 	fmt.Printf("Creating job\n")
