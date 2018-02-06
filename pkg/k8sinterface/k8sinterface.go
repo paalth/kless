@@ -38,6 +38,7 @@ type JobInfo struct {
 	RequestSource       string
 	ResponseSource      string
 	DependenciesURL     string
+	Comment             string
 }
 
 //DeploymentInfo contains parameters to create a Kubernetes Deployment
@@ -57,6 +58,7 @@ type DeploymentInfo struct {
 	FrontendCPULimit        string
 	FrontendMemoryLimit     string
 	FrontendEnvironmentVars map[string]string
+	Comment                 string
 }
 
 var logger *log.Logger

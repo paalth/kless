@@ -20,7 +20,7 @@ import (
 func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateEventHandlerRequest) (*klessapi.CreateEventHandlerReply, error) {
 	fmt.Printf("Entering CreateEventHandler\n")
 
-	fmt.Printf("Event handler name = %s in namespace %s using event handler builder %s\n", in.EventHandlerName, in.EventHandlerNamespace, in.EventHandlerBuilder)
+	fmt.Printf("Event handler name = %s in namespace %s using event handler builder %s, comment = %s\n", in.EventHandlerName, in.EventHandlerNamespace, in.EventHandlerBuilder, in.Comment)
 
 	etcdBuilderKey := "/kless/builders/" + in.EventHandlerBuilder
 
@@ -77,6 +77,7 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 		EventHandlerBuilderURL: eventHandlerBuilderURL,
 		Frontend:               in.EventHandlerFrontend,
 		DependenciesURL:        in.EventHandlerDependenciesURL,
+		Comment:                in.Comment,
 	}
 
 	etcdFrontendKey := "/kless/frontend/" + in.EventHandlerFrontend
@@ -160,6 +161,7 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 			EventHandlerBuilder:    eventHandlerInfo.EventHandlerBuilder,
 			EventHandlerBuilderURL: eventHandlerInfo.EventHandlerBuilderURL,
 			Frontend:               eventHandlerInfo.Frontend,
+			Comment:                eventHandlerInfo.Comment,
 		})
 	}
 
@@ -204,6 +206,7 @@ func (s *APIServer) DeleteEventHandler(ctx context.Context, in *klessapi.DeleteE
 	eventHandlerInfo := &klesshandlers.EventHandlerInfo{
 		Name:      in.EventHandlerName,
 		Namespace: in.EventHandlerNamespace,
+		Comment:   in.Comment,
 	}
 
 	handler.DeleteEventHandler(eventHandlerInfo)

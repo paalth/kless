@@ -22,6 +22,7 @@ func NewKlessCommand(f cmdutil.Factory, in io.Reader, out, err io.Writer) *cobra
 	cmds.PersistentFlags().StringP("namespace", "n", "kless", "Event handler namespace")
 	cmds.PersistentFlags().StringP("frontendtype", "t", "kless", "Event handler frontend type")
 	cmds.PersistentFlags().StringP("frontend", "f", "kless", "Event handler frontend")
+	cmds.PersistentFlags().StringP("comment", "c", "", "Comment")
 	cmds.PersistentFlags().String("serveraddress", "", "Kless server address (name:port)")
 
 	createCmds := &cobra.Command{

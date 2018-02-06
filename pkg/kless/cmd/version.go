@@ -22,7 +22,7 @@ func NewCmdVersion(f cmdutil.Factory, out io.Writer) *cobra.Command {
 			RunVersion(f, out, cmd)
 		},
 	}
-	cmd.Flags().BoolP("client", "c", false, "Client version only")
+	cmd.Flags().BoolP("client", "", false, "Client version only")
 	cmd.Flags().MarkShorthandDeprecated("client", "please use --client instead")
 
 	return cmd

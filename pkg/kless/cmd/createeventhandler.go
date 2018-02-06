@@ -51,6 +51,7 @@ func RunCreateEventHandler(f cmdutil.Factory, out io.Writer, cmd *cobra.Command)
 	eventHandlerDependenciesFile := cmdutil.GetFlagString(cmd, "dependencies-file")
 	eventHandlerDependenciesURL := cmdutil.GetFlagString(cmd, "dependencies-url")
 	eventHandlerFrontend := cmdutil.GetFlagString(cmd, "frontend")
+	comment := cmdutil.GetFlagString(cmd, "comment")
 
 	var eventHandlerSourceCode []byte
 
@@ -92,6 +93,7 @@ func RunCreateEventHandler(f cmdutil.Factory, out io.Writer, cmd *cobra.Command)
 		EventHandlerFrontend:        eventHandlerFrontend,
 		EventHandlerDependencies:    eventHandlerDependencies,
 		EventHandlerDependenciesURL: eventHandlerDependenciesURL,
+		Comment:                     comment,
 	})
 	if err != nil {
 		log.Fatalf("could not create event handler: %v", err)

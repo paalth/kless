@@ -54,6 +54,7 @@ message CreateEventHandlerRequest {
   string eventHandlerFrontend = 8;
   bytes  eventHandlerDependencies = 9;
   string eventHandlerDependenciesURL = 10;
+  string comment = 11;
 }
 
 message CreateEventHandlerReply {
@@ -73,6 +74,8 @@ message EventHandlerInformation {
 	string eventHandlerBuilder  = 5;
 	string eventHandlerBuilderURL  = 6;
 	string frontend = 7;
+  string comment = 8;
+  string status = 9;
 }
 
 message GetEventHandlerStatisticsRequest {
@@ -99,6 +102,7 @@ message DeleteEventHandlerRequest {
   string clientversion = 1;
   string eventHandlerName = 2;
   string eventHandlerNamespace = 3;
+  string comment = 4;
 }
 
 message DeleteEventHandlerReply {
@@ -110,6 +114,7 @@ message CreateEventHandlerBuilderRequest {
   string eventHandlerBuilderName = 2;
   string eventHandlerBuilderURL = 3;
   map<string,bytes> eventHandlerBuilderInformation = 4;
+  string comment = 5;
 }
 
 message CreateEventHandlerBuilderReply {
@@ -123,11 +128,13 @@ message GetEventHandlerBuildersRequest {
 message EventHandlerBuilderInformation {
   string eventHandlerBuilderName = 1;
   string eventHandlerBuilderURL = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerBuilderRequest {
   string clientversion = 1;
   string eventHandlerBuilderName = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerBuilderReply {
@@ -140,6 +147,7 @@ message CreateEventHandlerFrontendRequest {
   string eventHandlerFrontendType = 3;
   map<string,string> eventHandlerFrontendInformation = 4;
   string eventHandlerFrontendSecret = 5;
+  string comment = 6;
 }
 
 message CreateEventHandlerFrontendReply {
@@ -153,11 +161,13 @@ message GetEventHandlerFrontendsRequest {
 message FrontendInformation {
   string eventHandlerFrontendName = 1;
   string eventHandlerFrontendType = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerFrontendRequest {
   string clientversion = 1;
   string eventHandlerFrontendName = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerFrontendReply {
@@ -168,6 +178,7 @@ message CreateEventHandlerFrontendTypeRequest {
   string clientversion = 1;
   string eventHandlerFrontendType = 2;
   string eventHandlerFrontendTypeURL = 3;
+  string comment = 4;
 }
 
 message CreateEventHandlerFrontendTypeReply {
@@ -181,11 +192,13 @@ message GetEventHandlerFrontendTypesRequest {
 message FrontendTypeInformation {
   string eventHandlerFrontendType = 1;
   string eventHandlerFrontendTypeURL = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerFrontendTypeRequest {
   string clientversion = 1;
   string eventHandlerFrontendType = 2;
+  string comment = 3;
 }
 
 message DeleteEventHandlerFrontendTypeReply {

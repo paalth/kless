@@ -50,7 +50,7 @@ func RunGetFrontendTypes(f cmdutil.Factory, out io.Writer, cmd *cobra.Command) e
 		return nil
 	}
 
-	fmt.Fprintf(out, "%-15s %-35s\n", "TYPE", "URL")
+	fmt.Fprintf(out, "%-20s %-75s %-50s\n", "TYPE", "URL", "COMMENT")
 	for {
 		eventHandlerFrontendType, err := stream.Recv()
 		if err == io.EOF {
@@ -60,7 +60,7 @@ func RunGetFrontendTypes(f cmdutil.Factory, out io.Writer, cmd *cobra.Command) e
 			log.Fatalf("Could not get event handler frontend types: %v", err)
 			break
 		}
-		fmt.Fprintf(out, "%-15s %-35s\n", eventHandlerFrontendType.EventHandlerFrontendType, eventHandlerFrontendType.EventHandlerFrontendTypeURL)
+		fmt.Fprintf(out, "%-20s %-75s %-50s\n", eventHandlerFrontendType.EventHandlerFrontendType, eventHandlerFrontendType.EventHandlerFrontendTypeURL, eventHandlerFrontendType.Comment)
 	}
 
 	return nil

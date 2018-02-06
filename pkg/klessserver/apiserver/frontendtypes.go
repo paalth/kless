@@ -14,7 +14,7 @@ import (
 func (s *APIServer) CreateEventHandlerFrontendType(ctx context.Context, in *klessapi.CreateEventHandlerFrontendTypeRequest) (*klessapi.CreateEventHandlerFrontendTypeReply, error) {
 	fmt.Printf("Entering CreateEventHandlerFrontendType\n")
 
-	fmt.Printf("Event handler frontend type = %s with URL = %s\n", in.EventHandlerFrontendType, in.EventHandlerFrontendTypeURL)
+	fmt.Printf("Event handler frontend type = %s with URL = %s, comment = %s\n", in.EventHandlerFrontendType, in.EventHandlerFrontendTypeURL, in.Comment)
 
 	etcdKey := "/kless/frontendtypes/" + in.EventHandlerFrontendType
 

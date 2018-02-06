@@ -23,7 +23,8 @@ type EventHandlerInfo struct {
 	EventHandlerBuilder    string `json:"eventhandlerbuilder"`
 	EventHandlerBuilderURL string `json:"eventhandlerbuilderurl"`
 	Frontend               string `json:"frontend"`
-	DependenciesURL        string `json:"dependendiesurl"`
+	DependenciesURL        string `json:"dependenciesurl"`
+	Comment                string `json:"comment"`
 }
 
 //EventHandlerFrontendInfo defines the frontend info
@@ -31,6 +32,7 @@ type EventHandlerFrontendInfo struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`
 	Information map[string]string
+	Comment     string `json:"comment"`
 }
 
 func getJobName(e *EventHandlerInfo) string {

@@ -16,7 +16,7 @@ import (
 func (s *APIServer) CreateEventHandlerFrontend(ctx context.Context, in *klessapi.CreateEventHandlerFrontendRequest) (*klessapi.CreateEventHandlerFrontendReply, error) {
 	fmt.Printf("Entering CreateEventHandlerFrontend\n")
 
-	fmt.Printf("Event handler frontend name = %s using event handler frontend type %s\n", in.EventHandlerFrontendName, in.EventHandlerFrontendType)
+	fmt.Printf("Event handler frontend name = %s using event handler frontend type %s, comment = %s\n", in.EventHandlerFrontendName, in.EventHandlerFrontendType, in.Comment)
 
 	etcdTypeKey := "/kless/frontendtypes/" + in.EventHandlerFrontendType
 
@@ -50,6 +50,7 @@ func (s *APIServer) CreateEventHandlerFrontend(ctx context.Context, in *klessapi
 		Name:        in.EventHandlerFrontendName,
 		Type:        in.EventHandlerFrontendType,
 		Information: frontendInformation,
+		Comment:     in.Comment,
 	}
 
 	etcdFrontendKey := "/kless/frontend/" + in.EventHandlerFrontendName
@@ -83,11 +84,12 @@ func (s *APIServer) GetEventHandlerFrontends(in *klessapi.GetEventHandlerFronten
 			log.Fatal(err)
 		}
 
-		fmt.Printf("Frontend: name = %s, type = %s\n", eventHandlerFrontendInfo.Name, eventHandlerFrontendInfo.Type)
+		fmt.Printf("Frontend: name = %s, type = %s, comment = %s\n", eventHandlerFrontendInfo.Name, eventHandlerFrontendInfo.Type, eventHandlerFrontendInfo.Comment)
 
 		stream.Send(&klessapi.FrontendInformation{
 			EventHandlerFrontendName: eventHandlerFrontendInfo.Name,
 			EventHandlerFrontendType: eventHandlerFrontendInfo.Type,
+			Comment:                  eventHandlerFrontendInfo.Comment,
 		})
 	}
 

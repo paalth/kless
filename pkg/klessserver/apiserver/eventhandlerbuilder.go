@@ -14,7 +14,7 @@ import (
 func (s *APIServer) CreateEventHandlerBuilder(ctx context.Context, in *klessapi.CreateEventHandlerBuilderRequest) (*klessapi.CreateEventHandlerBuilderReply, error) {
 	fmt.Printf("Entering CreateEventHandlerBuilder\n")
 
-	fmt.Printf("Event handler builder name = %s with URL = %s\n", in.EventHandlerBuilderName, in.EventHandlerBuilderURL)
+	fmt.Printf("Event handler builder name = %s with URL = %s, comment = %s\n", in.EventHandlerBuilderName, in.EventHandlerBuilderURL, in.Comment)
 
 	//TODO: return error is event handler builder already exists
 

@@ -50,7 +50,7 @@ func RunGetEventHandlers(f cmdutil.Factory, out io.Writer, cmd *cobra.Command) e
 		return nil
 	}
 
-	fmt.Fprintf(out, "%-15s %-15s %-10s %-15s %-10s\n", "NAME", "NAMESPACE", "VERSION", "BUILDER", "FRONTEND")
+	fmt.Fprintf(out, "%-25s %-15s %-10s %-15s %-15s %-10s %-50s\n", "NAME", "NAMESPACE", "VERSION", "BUILDER", "FRONTEND", "STATUS", "COMMENT")
 	for {
 		eventHandler, err := stream.Recv()
 		if err == io.EOF {
@@ -60,7 +60,7 @@ func RunGetEventHandlers(f cmdutil.Factory, out io.Writer, cmd *cobra.Command) e
 			log.Fatalf("Could not get event handlers: %v", err)
 			break
 		}
-		fmt.Fprintf(out, "%-15s %-15s %-10s %-15s %-10s\n", eventHandler.EventHandlerName, eventHandler.EventHandlerNamespace, eventHandler.EventHandlerVersion, eventHandler.EventHandlerBuilder, eventHandler.Frontend)
+		fmt.Fprintf(out, "%-25s %-15s %-10s %-15s %-15s %-10s %-50s\n", eventHandler.EventHandlerName, eventHandler.EventHandlerNamespace, eventHandler.EventHandlerVersion, eventHandler.EventHandlerBuilder, eventHandler.Frontend, eventHandler.Status, eventHandler.Comment)
 	}
 
 	return nil
