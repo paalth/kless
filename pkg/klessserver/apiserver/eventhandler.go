@@ -153,6 +153,13 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 
 		fmt.Printf("Builder: %s\n", eventHandlerInfo.Name)
 
+		etcdkey := "/kless/handlerstatus/" + eventHandlerInfo.Name + ":" + eventHandlerInfo.Version
+		status, err := e.GetValue(etcdkey)
+		if nil != err {
+			log.Fatal("Unable to get value")
+			status = "N/A"
+		}
+
 		stream.Send(&klessapi.EventHandlerInformation{
 			EventHandlerId:         eventHandlerInfo.ID,
 			EventHandlerName:       eventHandlerInfo.Name,
@@ -161,6 +168,7 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 			EventHandlerBuilder:    eventHandlerInfo.EventHandlerBuilder,
 			EventHandlerBuilderURL: eventHandlerInfo.EventHandlerBuilderURL,
 			Frontend:               eventHandlerInfo.Frontend,
+			Status:                 status,
 			Comment:                eventHandlerInfo.Comment,
 		})
 	}
@@ -225,4 +233,79 @@ func (s *APIServer) DeleteEventHandler(ctx context.Context, in *klessapi.DeleteE
 	fmt.Printf("Leaving DeleteEventHandler\n")
 
 	return &klessapi.DeleteEventHandlerReply{Response: "OK"}, nil
+}
+
+//DescribeEventHandler removes an event handler
+func (s *APIServer) DescribeEventHandler(ctx context.Context, in *klessapi.DescribeEventHandlerRequest) (*klessapi.DescribeEventHandlerReply, error) {
+
+	fmt.Printf("Entering DescribeEventHandler\n")
+
+	fmt.Printf("Event handler name = %s in namespace %s version = %s\n", in.EventHandlerName, in.EventHandlerNamespace, in.EventHandlerVersion)
+
+	response := "Not found"
+	eventHandler := &klessapi.EventHandlerInformation{}
+	sourceCode := make([]byte, 0)
+	buildOutput := make([]byte, 0)
+
+	e := &etcdinterface.EtcdInterface{}
+
+	buildersJSON, _ := e.GetValuesFromPrefix("/kless/handlers/")
+
+	for i := 0; i < len(buildersJSON); i++ {
+		eventHandlerInfo := klesshandlers.EventHandlerInfo{}
+		err := json.Unmarshal([]byte(buildersJSON[i]), &eventHandlerInfo)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Builder: %s\n", eventHandlerInfo.Name)
+
+		if eventHandlerInfo.Name == in.EventHandlerName {
+			response = "OK"
+
+			etcdkey := "/kless/handlerstatus/" + eventHandlerInfo.Name + ":" + eventHandlerInfo.Version
+			status, err := e.GetValue(etcdkey)
+			if nil != err {
+				log.Fatal("Unable to get value")
+				status = "N/A"
+			}
+
+			eventHandler = &klessapi.EventHandlerInformation{
+				EventHandlerId:         eventHandlerInfo.ID,
+				EventHandlerName:       eventHandlerInfo.Name,
+				EventHandlerNamespace:  eventHandlerInfo.Namespace,
+				EventHandlerVersion:    eventHandlerInfo.Version,
+				EventHandlerBuilder:    eventHandlerInfo.EventHandlerBuilder,
+				EventHandlerBuilderURL: eventHandlerInfo.EventHandlerBuilderURL,
+				Frontend:               eventHandlerInfo.Frontend,
+				Status:                 status,
+				Comment:                eventHandlerInfo.Comment,
+			}
+
+			etcdkey = "/kless/source/" + eventHandlerInfo.ID
+			fmt.Printf("get value from etcd, key = %s\n", etcdkey)
+			sourceCodeString, err := e.GetValue(etcdkey)
+			if nil != err {
+				log.Fatal("Unable to get handler source code")
+			} else {
+				sourceCode = []byte(sourceCodeString)
+			}
+
+			etcdkey = "/kless/handlerbuildoutput/" + eventHandlerInfo.Name + ":" + eventHandlerInfo.Version
+			fmt.Printf("get value from etcd, key = %s\n", etcdkey)
+			buildOutputString, err := e.GetValue(etcdkey)
+			if nil != err {
+				log.Fatal("Unable to get build output")
+			} else {
+				buildOutput = []byte(buildOutputString)
+			}
+		}
+	}
+
+	fmt.Printf("Leaving DescribeEventHandler\n")
+
+	return &klessapi.DescribeEventHandlerReply{Response: response,
+		EventHandlerInformation: eventHandler,
+		SourceCode:              sourceCode,
+		BuildOutput:             buildOutput}, nil
 }

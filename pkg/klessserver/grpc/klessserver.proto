@@ -18,6 +18,7 @@ service KlessAPI {
   rpc GetEventHandlers (GetEventHandlersRequest) returns (stream EventHandlerInformation) {}
   rpc GetEventHandlerStatistics (GetEventHandlerStatisticsRequest) returns (stream EventHandlerStatisticsInformation) {}
   rpc DeleteEventHandler (DeleteEventHandlerRequest) returns (DeleteEventHandlerReply) {}
+  rpc DescribeEventHandler (DescribeEventHandlerRequest) returns (DescribeEventHandlerReply) {}
 
   // Event handler builder API
   rpc CreateEventHandlerBuilder (CreateEventHandlerBuilderRequest) returns (CreateEventHandlerBuilderReply) {}
@@ -102,11 +103,26 @@ message DeleteEventHandlerRequest {
   string clientversion = 1;
   string eventHandlerName = 2;
   string eventHandlerNamespace = 3;
-  string comment = 4;
+  string eventHandlerVersion = 4;
+  string comment = 5;
 }
 
 message DeleteEventHandlerReply {
   string response = 1;
+}
+
+message DescribeEventHandlerRequest {
+  string clientversion = 1;
+  string eventHandlerName = 2;
+  string eventHandlerNamespace = 3;
+  string eventHandlerVersion = 4;
+}
+
+message DescribeEventHandlerReply {
+  string response = 1;
+  EventHandlerInformation eventHandlerInformation = 2;
+  bytes sourceCode = 3;
+  bytes buildOutput = 4;
 }
 
 message CreateEventHandlerBuilderRequest {

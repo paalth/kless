@@ -70,8 +70,10 @@ func etcdHandler(w http.ResponseWriter, r *http.Request) {
 	op := r.URL.Query().Get("op")
 	key := r.URL.Query().Get("key")
 	builder := r.URL.Query().Get("builder")
+	handler := r.URL.Query().Get("handler")
+	status := r.URL.Query().Get("status")
 
-	fmt.Printf("etcd handler, op = %s builder = %s key = %s\n", op, builder, key)
+	fmt.Printf("etcd handler, op = %s builder = %s key = %s handler = %s status = %s\n", op, builder, key, handler, status)
 
 	e := &etcdinterface.EtcdInterface{}
 
@@ -103,6 +105,52 @@ func etcdHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Fprintf(w, "{ status: OK }")
+	case "sethandlerstatus":
+		etcdkey = "/kless/handlerstatus/" + handler
+		fmt.Printf("put value to etcd, key = %s\n", etcdkey)
+
+		err := e.SetValue(etcdkey, status)
+		if nil != err {
+			log.Fatal("Unable to set value")
+		}
+
+		fmt.Fprintf(w, "{ status: OK }")
+	case "gethandlerstatus":
+		etcdkey = "/kless/handlerstatus/" + handler
+		fmt.Printf("get value from etcd, key = %s\n", etcdkey)
+		value, err := e.GetValue(etcdkey)
+		if nil != err {
+			log.Fatal("Unable to get value")
+			fmt.Fprint(w, "{ status : failure }")
+		} else {
+			fmt.Printf("got value from etcd, key = %s value = %s\n", etcdkey, value)
+			fmt.Fprint(w, value)
+		}
+	case "setbuildoutput":
+		etcdkey = "/kless/handlerbuildoutput/" + handler
+		fmt.Printf("put value to etcd, key = %s\n", etcdkey)
+		value, err := ioutil.ReadAll(r.Body)
+		if nil != err {
+			log.Fatal("Unable to read request body")
+		}
+
+		err = e.SetValue(etcdkey, string(value))
+		if nil != err {
+			log.Fatal("Unable to set value")
+		}
+
+		fmt.Fprintf(w, "{ status: OK }")
+	case "getbuildoutput":
+		etcdkey = "/kless/handlerbuildoutput/" + handler
+		fmt.Printf("get value from etcd, key = %s\n", etcdkey)
+		value, err := e.GetValue(etcdkey)
+		if nil != err {
+			log.Fatal("Unable to get value")
+			fmt.Fprint(w, "{ status : failure }")
+		} else {
+			fmt.Printf("got value from etcd, key = %s value = %s\n", etcdkey, value)
+			fmt.Fprint(w, value)
+		}
 	case "getsource":
 		etcdkey = "/kless/source/" + key
 		fmt.Printf("get source from etcd, key = %s\n", etcdkey)
@@ -115,7 +163,7 @@ func etcdHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, source)
 		}
 	default:
-		fmt.Fprintf(w, "op query parameter must be one of: 'get', 'put', 'getsource'")
+		fmt.Fprintf(w, "op query parameter must be one of: 'get', 'put', 'sethandlerstatus', 'gethandlerstatus', 'setbuildoutput', 'getbuildoutput', 'getsource'")
 	}
 
 }

@@ -9,3 +9,7 @@
 /kless/frontendtypes/<frontend type name> - value = frontend image repository URL
 
 /kless/frontend/<frontend name> - value = frontend info encoded as JSON
+
+/kless/handlerstatus/<event handler name>:<event handler version> - value = event handler state (one of BuildInit, BuildComplete, BuildError, Running, Stopped, Error)
+
+/kless/handlerbuildoutput/<event handler name>:<event handler version> - value = output from event handler build process
