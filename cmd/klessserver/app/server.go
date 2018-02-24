@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/paalth/kless/pkg/etcdinterface"
+	k "github.com/paalth/kless/pkg/k8sinterface"
 	apiserver "github.com/paalth/kless/pkg/klessserver/apiserver"
 	klessapi "github.com/paalth/kless/pkg/klessserver/grpc"
 
@@ -35,6 +36,7 @@ func Run() error {
 func StartServer() {
 	serverMux := http.NewServeMux()
 	serverMux.HandleFunc("/etcd", etcdHandler)
+	serverMux.HandleFunc("/k8s", k8sHandler)
 	serverMux.HandleFunc("/cfg", cfgHandler)
 	log.Fatal(http.ListenAndServe("0.0.0.0:8010", serverMux))
 }
@@ -62,6 +64,34 @@ func cfgHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	default:
 		fmt.Fprintf(w, "op query parameter must currently be 'get'")
+	}
+
+}
+
+func k8sHandler(w http.ResponseWriter, r *http.Request) {
+	op := r.URL.Query().Get("op")
+	name := r.URL.Query().Get("name")
+	namespace := r.URL.Query().Get("namespace")
+
+	fmt.Printf("k8s handler, op = %s name = %s namespace = %s\n", op, name, namespace)
+
+	k8s := &k.K8sInterface{}
+
+	switch op {
+	case "getsecret":
+		fmt.Printf("get secret from k8s\n")
+		secret, err := k8s.GetSecret(name, namespace)
+		if nil != err {
+			log.Fatal("Unable to get secret")
+			fmt.Fprint(w, "{ status : failure }")
+		} else {
+			fmt.Printf("got secret from k8")
+			for k, v := range secret {
+				fmt.Fprintf(w, "%s: %s\n", k, v)
+			}
+		}
+	default:
+		fmt.Fprintf(w, "op query parameter must be one of: 'getsecret'")
 	}
 
 }

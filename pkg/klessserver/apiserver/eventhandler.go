@@ -9,6 +9,7 @@ import (
 
 	"github.com/paalth/kless/pkg/etcdinterface"
 	"github.com/paalth/kless/pkg/influxdbinterface"
+	k "github.com/paalth/kless/pkg/k8sinterface"
 	klessapi "github.com/paalth/kless/pkg/klessserver/grpc"
 	klesshandlers "github.com/paalth/kless/pkg/klessserver/servicehandler"
 
@@ -141,6 +142,7 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 	fmt.Printf("Entering GetEventHandlers\n")
 
 	e := &etcdinterface.EtcdInterface{}
+	k8s := &k.K8sInterface{}
 
 	buildersJSON, _ := e.GetValuesFromPrefix("/kless/handlers/")
 
@@ -159,6 +161,11 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 			log.Fatal("Unable to get value")
 			status = "N/A"
 		}
+		eventHandlerAvailable, err := k8s.GetDeploymentStatus(eventHandlerInfo.Name, eventHandlerInfo.Namespace)
+		if nil != err {
+			fmt.Printf("Unable to get deployment status\n")
+			eventHandlerAvailable = "N/A"
+		}
 
 		stream.Send(&klessapi.EventHandlerInformation{
 			EventHandlerId:         eventHandlerInfo.ID,
@@ -168,8 +175,9 @@ func (s *APIServer) GetEventHandlers(in *klessapi.GetEventHandlersRequest, strea
 			EventHandlerBuilder:    eventHandlerInfo.EventHandlerBuilder,
 			EventHandlerBuilderURL: eventHandlerInfo.EventHandlerBuilderURL,
 			Frontend:               eventHandlerInfo.Frontend,
-			Status:                 status,
+			BuildStatus:            status,
 			Comment:                eventHandlerInfo.Comment,
+			EventHandlerAvailable:  eventHandlerAvailable,
 		})
 	}
 
@@ -230,6 +238,13 @@ func (s *APIServer) DeleteEventHandler(ctx context.Context, in *klessapi.DeleteE
 		return &klessapi.DeleteEventHandlerReply{Response: "Unable to delete event handler"}, nil
 	}
 
+	// TODO:
+	// use full combination to id handler: name, namespace, version
+	// Remove any collected stats
+	// Delete source code from etcd
+	// Delete build output from etcd
+	// Delete build status from etcd
+
 	fmt.Printf("Leaving DeleteEventHandler\n")
 
 	return &klessapi.DeleteEventHandlerReply{Response: "OK"}, nil
@@ -266,8 +281,16 @@ func (s *APIServer) DescribeEventHandler(ctx context.Context, in *klessapi.Descr
 			etcdkey := "/kless/handlerstatus/" + eventHandlerInfo.Name + ":" + eventHandlerInfo.Version
 			status, err := e.GetValue(etcdkey)
 			if nil != err {
-				log.Fatal("Unable to get value")
+				fmt.Printf("Unable to get handler status value\n")
 				status = "N/A"
+			}
+
+			k8s := &k.K8sInterface{}
+
+			eventHandlerAvailable, err := k8s.GetDeploymentStatus(eventHandlerInfo.Name, eventHandlerInfo.Namespace)
+			if nil != err {
+				fmt.Printf("Unable to get deployment status\n")
+				eventHandlerAvailable = "N/A"
 			}
 
 			eventHandler = &klessapi.EventHandlerInformation{
@@ -278,8 +301,9 @@ func (s *APIServer) DescribeEventHandler(ctx context.Context, in *klessapi.Descr
 				EventHandlerBuilder:    eventHandlerInfo.EventHandlerBuilder,
 				EventHandlerBuilderURL: eventHandlerInfo.EventHandlerBuilderURL,
 				Frontend:               eventHandlerInfo.Frontend,
-				Status:                 status,
+				BuildStatus:            status,
 				Comment:                eventHandlerInfo.Comment,
+				EventHandlerAvailable:  eventHandlerAvailable,
 			}
 
 			etcdkey = "/kless/source/" + eventHandlerInfo.ID
@@ -295,7 +319,7 @@ func (s *APIServer) DescribeEventHandler(ctx context.Context, in *klessapi.Descr
 			fmt.Printf("get value from etcd, key = %s\n", etcdkey)
 			buildOutputString, err := e.GetValue(etcdkey)
 			if nil != err {
-				log.Fatal("Unable to get build output")
+				fmt.Printf("Unable to get build output\n")
 			} else {
 				buildOutput = []byte(buildOutputString)
 			}

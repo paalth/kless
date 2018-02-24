@@ -56,15 +56,16 @@ func RunDescribeEventHandler(f cmdutil.Factory, out io.Writer, cmd *cobra.Comman
 	}
 
 	if "OK" == r.Response {
-		fmt.Fprintf(out, "ID:          %s\n", r.EventHandlerInformation.EventHandlerId)
-		fmt.Fprintf(out, "Name:        %s\n", r.EventHandlerInformation.EventHandlerName)
-		fmt.Fprintf(out, "Namespace:   %s\n", r.EventHandlerInformation.EventHandlerNamespace)
-		fmt.Fprintf(out, "Version:     %s\n", r.EventHandlerInformation.EventHandlerVersion)
-		fmt.Fprintf(out, "Builder:     %s\n", r.EventHandlerInformation.EventHandlerBuilder)
-		fmt.Fprintf(out, "Builder URL: %s\n", r.EventHandlerInformation.EventHandlerBuilderURL)
-		fmt.Fprintf(out, "Frontend:    %s\n", r.EventHandlerInformation.Frontend)
-		fmt.Fprintf(out, "Comment:     %s\n", r.EventHandlerInformation.Comment)
-		fmt.Fprintf(out, "Status:      %s\n", r.EventHandlerInformation.Status)
+		fmt.Fprintf(out, "ID:                %s\n", r.EventHandlerInformation.EventHandlerId)
+		fmt.Fprintf(out, "Name:              %s\n", r.EventHandlerInformation.EventHandlerName)
+		fmt.Fprintf(out, "Namespace:         %s\n", r.EventHandlerInformation.EventHandlerNamespace)
+		fmt.Fprintf(out, "Version:           %s\n", r.EventHandlerInformation.EventHandlerVersion)
+		fmt.Fprintf(out, "Builder:           %s\n", r.EventHandlerInformation.EventHandlerBuilder)
+		fmt.Fprintf(out, "Builder URL:       %s\n", r.EventHandlerInformation.EventHandlerBuilderURL)
+		fmt.Fprintf(out, "Frontend:          %s\n", r.EventHandlerInformation.Frontend)
+		fmt.Fprintf(out, "Comment:           %s\n", r.EventHandlerInformation.Comment)
+		fmt.Fprintf(out, "Build status:      %s\n", r.EventHandlerInformation.BuildStatus)
+		fmt.Fprintf(out, "Handler available: %s\n", r.EventHandlerInformation.EventHandlerAvailable)
 
 		sourceCode := string(r.SourceCode)
 		fmt.Fprintf(out, "Source code:\n\n")

@@ -2,6 +2,9 @@
 
 echo "Starting build of Go event handler"
 
+CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildInit"
+curl -s $KLESS_SERVER/$CURRENT_STATUS 
+
 mkdir /go/src/eventhandler
 mkdir -p /go/src/github.com/paalth/kless/pkg/interface/klessgo
 
@@ -23,7 +26,16 @@ go get ./...
 
 echo "Building event handler"
 
-go install /go/src/InvokeEventHandler.go
+go install /go/src/InvokeEventHandler.go > stdout.txt &> stderr.txt
+if [ "$?" -ne 0 ]; then 
+  echo "Compilation failed, error:";
+  cat stderr.txt;
+  CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildError";
+  curl -s $KLESS_SERVER/$CURRENT_STATUS;
+  BUILD_OUTPUT="etcd?op=setbuildoutput&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION";
+  curl -s --request POST --data-binary @stderr.txt --header "Content-Type:application/octet-stream" $KLESS_SERVER/$BUILD_OUTPUT;
+  exit 0; 
+fi
 
 cp /go/bin/InvokeEventHandler /tmp
 
@@ -66,5 +78,9 @@ docker build -f Dockerfile.tmp -t $TAG .
 
 echo "Pushing image to registry"
 docker push $TAG
+
+echo "Reporting complete status"
+CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildComplete"
+curl -s $KLESS_SERVER/$CURRENT_STATUS 
 
 echo "Image creation complete"

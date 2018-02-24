@@ -246,6 +246,139 @@ func (k *K8sInterface) CreateDeployment(d *DeploymentInfo) error {
 	return nil
 }
 
+//CreateIngress creates an ingress
+func (k *K8sInterface) CreateIngress(name string, namespace string, host string, path string, servicename string, serviceport int32) error {
+	ingressSpec := &v1beta1.Ingress{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Ingress",
+			APIVersion: "extensions/v1beta1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: namespace,
+		},
+		Spec: v1beta1.IngressSpec{
+			Rules: []v1beta1.IngressRule{
+				v1beta1.IngressRule{
+					Host: host,
+					IngressRuleValue: v1beta1.IngressRuleValue{
+						HTTP: &v1beta1.HTTPIngressRuleValue{
+							Paths: []v1beta1.HTTPIngressPath{
+								v1beta1.HTTPIngressPath{
+									Path: path,
+									Backend: v1beta1.IngressBackend{
+										ServiceName: servicename,
+										ServicePort: intstr.IntOrString{
+											IntVal: serviceport,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ingress := c.Extensions().Ingresses(namespace)
+
+	_, err = ingress.Update(ingressSpec)
+	switch {
+	case err == nil:
+		logger.Println("ingress updated")
+	case !errors.IsNotFound(err):
+		return fmt.Errorf("could not update ingress: %s", err)
+	default:
+		_, err = ingress.Create(ingressSpec)
+		if err != nil {
+			return fmt.Errorf("could not create ingress: %s", err)
+		}
+		logger.Println("ingress created")
+	}
+
+	return nil
+}
+
+//GetDeploymentStatus gets the current status of a Deployment
+func (k *K8sInterface) GetDeploymentStatus(name string, namespace string) (string, error) {
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	deploy := c.Extensions().Deployments(namespace)
+
+	status := "N/A"
+
+	d, err := deploy.Get(name, metav1.GetOptions{})
+	switch {
+	case err == nil:
+		logger.Println("got deployment controller")
+		fmt.Printf("Deployment status, replicas: %d\n", d.Status.Replicas)
+		for _, condition := range d.Status.Conditions {
+			if condition.Type == "Available" {
+				status = string(condition.Status)
+			}
+		}
+	case !errors.IsNotFound(err):
+		return "N/A", fmt.Errorf("could not get deployment controller: %s", err)
+	}
+
+	return status, nil
+}
+
+//GetSecret gets a secret
+func (k *K8sInterface) GetSecret(name string, namespace string) (map[string]string, error) {
+
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	secrets := c.Core().Secrets(namespace)
+
+	secret := make(map[string]string)
+
+	s, err := secrets.Get(name, metav1.GetOptions{})
+	switch {
+	case err == nil:
+		logger.Println("got secret")
+		fmt.Printf("Secret type: %s\n", string(s.Type))
+		for k, v := range s.Data {
+			secret[k] = string(v)
+		}
+	case !errors.IsNotFound(err):
+		return secret, fmt.Errorf("could not get secret: %s", err)
+	}
+
+	return secret, nil
+}
+
 //CreateJob creates a job
 func (k *K8sInterface) CreateJob(j *JobInfo) error {
 	jobSpec := &batch.Job{

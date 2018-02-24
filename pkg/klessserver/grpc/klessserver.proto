@@ -68,32 +68,33 @@ message GetEventHandlersRequest {
 }
 
 message EventHandlerInformation {
-	string eventHandlerId = 1;
-	string eventHandlerName = 2;
-	string eventHandlerNamespace = 3;
-	string eventHandlerVersion = 4;
-	string eventHandlerBuilder  = 5;
-	string eventHandlerBuilderURL  = 6;
-	string frontend = 7;
+  string eventHandlerId = 1;
+  string eventHandlerName = 2;
+  string eventHandlerNamespace = 3;
+  string eventHandlerVersion = 4;
+  string eventHandlerBuilder  = 5;
+  string eventHandlerBuilderURL  = 6;
+  string frontend = 7;
   string comment = 8;
-  string status = 9;
+  string buildStatus = 9;
+  string eventHandlerAvailable = 10;
 }
 
 message GetEventHandlerStatisticsRequest {
   string clientversion = 1;
   string eventHandlerNamespace = 2;
-	string eventHandlerName = 3;
+  string eventHandlerName = 3;
   string startTime = 4;
   string endTime = 5;
   bool summary = 6;
 }
 
 message EventHandlerStatisticsInformation {
-	string timestamp = 1;
-	string eventHandlerName = 2;
-	string eventHandlerNamespace = 3;
-	string eventHandlerVersion = 4;
-	string podName = 5;
+  string timestamp = 1;
+  string eventHandlerName = 2;
+  string eventHandlerNamespace = 3;
+  string eventHandlerVersion = 4;
+  string podName = 5;
   int64 requestSize = 6;
   int64 responseSize = 7;
   int64 responseTime = 8; 

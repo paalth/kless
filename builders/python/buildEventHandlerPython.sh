@@ -2,6 +2,11 @@
 
 echo "Starting build of Python event handler"
 
+CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildInit"
+curl -s $KLESS_SERVER/$CURRENT_STATUS 
+
+echo "Downloading source files from kless server"
+
 wget $KLESS_SERVER/$KLESS_EVENT_HANDLER_SOURCE -O /tmp/EventHandler1.py
 wget $KLESS_SERVER/$KLESS_ENTRYPOINT_SOURCE -O /tmp/InvokeEventHandler.py
 wget $KLESS_SERVER/$KLESS_CONTEXT_SOURCE -O /tmp/KlessContext.py
@@ -49,5 +54,9 @@ echo "Pushing image to registry"
 docker push $TAG
 
 rm Dockerfile.tmp
+
+echo "Reporting complete status"
+CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildComplete"
+curl -s $KLESS_SERVER/$CURRENT_STATUS 
 
 echo "Image creation complete"

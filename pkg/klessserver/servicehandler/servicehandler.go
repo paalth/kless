@@ -121,8 +121,11 @@ func (s *ServiceHandler) DeleteEventHandler(e *EventHandlerInfo) error {
 
 	k8s := &k.K8sInterface{}
 
+	// Only printing messages on failure to delete objects as
+	// they could have been manually deleted without our knowledge
+
 	if err := k8s.DeleteDeployment(e.Name, e.Namespace); err != nil {
-		log.Fatal(err)
+		fmt.Printf("Caught error when attempting to delete Deployment\n")
 	}
 
 	// TODO: delete namespace if this is the last handler in the namespace
@@ -130,7 +133,7 @@ func (s *ServiceHandler) DeleteEventHandler(e *EventHandlerInfo) error {
 	// TODO: delete running pods
 
 	if err := k8s.DeleteService(getServiceName(e), e.Namespace); err != nil {
-		log.Fatal(err)
+		fmt.Printf("Caught error when attempting to delete Service\n")
 	}
 
 	fmt.Printf("Leaving servicehandler.DeleteEventHandler\n")

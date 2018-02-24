@@ -32,8 +32,61 @@ if [[ ! -z "$KLESS_DEPENDENCIES_URL" ]]; then
   # Download list of dependencies
   curl -o deps.txt $KLESS_DEPENDENCIES_URL
 
-  # Download all dependencies listed in file
-  awk '{ cmd="curl -O "$1; system(cmd) }' deps.txt
+  echo '{ cmd="curl -k -O "$1; system(cmd) }' > awk_cmd
+
+  # Check to see if we need to deal with security when retrieving dependencies
+  # First line of dependencies file need to be of this format: SECURITY type=BasicAuth secret=nameofasecrethere
+  LINE1=$(head -1 deps.txt)
+  TOKEN1=$(echo $LINE1 | cut -d " " -f1)
+
+  if [[ $TOKEN1 = "SECURITY" ]]; then
+    echo "Security: enabled"
+  
+    SECURITY_TYPE_FIELD=$(echo $LINE1 | cut -d " " -f2)
+    SECURITY_TYPE=${SECURITY_TYPE_FIELD:5}
+
+    if [[ $SECURITY_TYPE = "BasicAuth" ]]; then
+      echo "Security type: BasicAuth"
+
+      SECRET_FIELD=$(echo $LINE1 | cut -d " " -f3)
+      SECRET_NAME=${SECRET_FIELD:7}
+
+      echo "Secret: $SECRET_NAME"
+
+      AUTH_INFO="k8s?op=getsecret&name=$SECRET_NAME&namespace=kless"
+      curl -s -o auth.txt $KLESS_SERVER/$AUTH_INFO
+
+      BASIC_AUTH_USERNAME=""
+      BASIC_AUTH_PASSWORD=""
+
+      while read line || [[ -n $line ]]; do
+        key=`echo $line | cut -s -d' ' -f1`
+        value=`echo $line | cut -d' ' -f2-`
+
+        if [[ $key = "username:" ]]; then
+          BASIC_AUTH_USERNAME=$value    
+        fi
+        if [[ $key = "password:" ]]; then
+          BASIC_AUTH_PASSWORD=$value    
+        fi
+      done < auth.txt
+    
+      rm auth.txt
+
+      echo "Basic auth: $BASIC_AUTH_USERNAME:$BASIC_AUTH_PASSWORD"
+
+      echo '{ cmd="curl -u '$BASIC_AUTH_USERNAME:$BASIC_AUTH_PASSWORD' -k -O "$1; system(cmd) }' > awk_cmd
+    else
+      echo "Unknown security type = $SECURITY_TYPE"
+    fi
+  else 
+    echo "NO Security enabled"
+  fi
+
+  # Download all dependencies listed in file (with security if specified)
+  echo "AWK_CMD: "
+  cat awk_cmd
+  awk -f awk_cmd deps.txt
 
   rm deps.txt
   cd ..
