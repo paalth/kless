@@ -2,7 +2,7 @@
 
 cd /tmp
 
-echo "Starting build of Java event handler"
+echo "Starting build of Java event handler, builder version = 0.0.1"
 
 CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildInit"
 curl -s $KLESS_SERVER/$CURRENT_STATUS 
@@ -31,6 +31,13 @@ if [[ ! -z "$KLESS_DEPENDENCIES_URL" ]]; then
 
   # Download list of dependencies
   curl -o deps.txt $KLESS_DEPENDENCIES_URL
+
+  if [[ ! $KLESS_DEPENDENCIES_URL == "$KLESS_SERVER*" ]]; then
+    echo "Sending dependencies retrieved back to server for storage"
+
+    DEPS="etcd?op=setdependencies&handlerID=$KLESS_EVENT_HANDLER_ID";
+    curl -s --request POST --data-binary @deps.txt --header "Content-Type:application/octet-stream" $KLESS_SERVER/$DEPS;
+  fi
 
   echo '{ cmd="curl -k -O "$1; system(cmd) }' > awk_cmd
 
@@ -152,15 +159,28 @@ if [[ ! -z "$REGISTRY_USERNAME"  ]]; then
 fi
 
 echo "Building image"
-docker build -f Dockerfile.tmp --build-arg KLESS_CP=$CP -t $TAG .
+docker build -f Dockerfile.tmp --build-arg KLESS_CP=$CP -t $TAG . > stdout.txt &> stderr.txt
+if [ "$?" -ne 0 ]; then 
+  echo "Docker build failed, error:";
+  cat stderr.txt;
+  CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildError";
+  curl -s $KLESS_SERVER/$CURRENT_STATUS;
+  BUILD_OUTPUT="etcd?op=setbuildoutput&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION";
+  curl -s --request POST --data-binary @stderr.txt --header "Content-Type:application/octet-stream" $KLESS_SERVER/$BUILD_OUTPUT;
+  exit 0; 
+fi
 
 echo "Pushing image to registry"
 docker push $TAG
 
 rm Dockerfile.tmp
 
-echo "Reporting complete status"
+echo "Reporting build complete status"
 CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildComplete"
 curl -s $KLESS_SERVER/$CURRENT_STATUS 
+
+echo "Requesting deployment of built handler"
+DEPLOY_REQ="api?op=deploy&handlerName=$KLESS_EVENT_HANDLER_NAME&handlerNamespace=$KLESS_EVENT_HANDLER_NAMESPACE&handlerVersion=$KLESS_EVENT_HANDLER_VERSION&handlerId=$KLESS_EVENT_HANDLER_ID"
+curl -s $KLESS_SERVER/$DEPLOY_REQ
 
 echo "Image creation complete"

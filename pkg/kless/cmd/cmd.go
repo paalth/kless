@@ -55,11 +55,18 @@ func NewKlessCommand(f cmdutil.Factory, in io.Reader, out, err io.Writer) *cobra
 		Long:  "Get detailed Kless object information",
 	}
 
+	submitCmds := &cobra.Command{
+		Use:   "submit",
+		Short: "submit commands",
+		Long:  "Submit request to Kless object",
+	}
+
 	cmds.AddCommand(createCmds)
 	cmds.AddCommand(getCmds)
 	cmds.AddCommand(updateCmds)
 	cmds.AddCommand(deleteCmds)
 	cmds.AddCommand(describeCmds)
+	cmds.AddCommand(submitCmds)
 
 	createCmds.AddCommand(NewCmdCreateEventHandler(f, out))
 	createCmds.AddCommand(NewCmdCreateEventHandlerBuilder(f, out))
@@ -80,6 +87,8 @@ func NewKlessCommand(f cmdutil.Factory, in io.Reader, out, err io.Writer) *cobra
 	deleteCmds.AddCommand(NewCmdDeleteEventHandlerFrontend(f, out))
 
 	describeCmds.AddCommand(NewCmdDescribeEventHandler(f, out))
+
+	submitCmds.AddCommand(NewCmdSubmitFrontendRequest(f, out))
 
 	cmds.AddCommand(NewCmdVersion(f, out))
 

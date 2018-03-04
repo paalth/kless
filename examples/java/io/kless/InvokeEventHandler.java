@@ -1,8 +1,11 @@
 package io.kless;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.Map;
@@ -45,6 +48,15 @@ class InvokeEventHandler {
                         requestHeaders.put(headerName, headerValues.get(0));
                     }
                     req.setHeaders(requestHeaders);
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    BufferedInputStream inputStream = new BufferedInputStream(t.getRequestBody());
+                    byte[] buf = new byte[4096];
+                    int numRead = 0;
+                    while ((numRead = inputStream.read(buf, 0, 4096)) > 0) {
+                        byteArrayOutputStream.write(buf, 0, numRead);
+                    }
+                    req.setBody(ByteBuffer.wrap(byteArrayOutputStream.toByteArray()));
 
                     EventHandlerInterface eventHandler;
                     try {

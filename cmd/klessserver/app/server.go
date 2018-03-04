@@ -24,7 +24,9 @@ func Run() error {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
+
 	klessapi.RegisterKlessAPIServer(s, &apiserver.APIServer{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
@@ -38,7 +40,28 @@ func StartServer() {
 	serverMux.HandleFunc("/etcd", etcdHandler)
 	serverMux.HandleFunc("/k8s", k8sHandler)
 	serverMux.HandleFunc("/cfg", cfgHandler)
+	serverMux.HandleFunc("/api", apiHandler)
 	log.Fatal(http.ListenAndServe("0.0.0.0:8010", serverMux))
+}
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	op := r.URL.Query().Get("op")
+	handlerName := r.URL.Query().Get("handlerName")
+	handlerNamespace := r.URL.Query().Get("handlerNamespace")
+	handlerVersion := r.URL.Query().Get("handlerVersion")
+
+	fmt.Printf("api handler, op = %s\n", op)
+
+	api := &apiserver.APIServer{}
+
+	switch op {
+	case "deploy":
+		fmt.Printf("deploy handler, name = %s namespace = %s version = %sk8s\n", handlerName, handlerNamespace, handlerVersion)
+		api.DeployEventHandler(handlerName, handlerNamespace, handlerVersion)
+	default:
+		fmt.Fprintf(w, "op query parameter must currently be 'deploy'")
+	}
+
 }
 
 func cfgHandler(w http.ResponseWriter, r *http.Request) {
@@ -101,6 +124,7 @@ func etcdHandler(w http.ResponseWriter, r *http.Request) {
 	key := r.URL.Query().Get("key")
 	builder := r.URL.Query().Get("builder")
 	handler := r.URL.Query().Get("handler")
+	handlerID := r.URL.Query().Get("handlerID")
 	status := r.URL.Query().Get("status")
 
 	fmt.Printf("etcd handler, op = %s builder = %s key = %s handler = %s status = %s\n", op, builder, key, handler, status)
@@ -192,8 +216,33 @@ func etcdHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("got source from etcd, key = %s source = %s\n", etcdkey, source)
 			fmt.Fprint(w, source)
 		}
+	case "getdependencies":
+		etcdkey = "/kless/dependencies/" + key
+		fmt.Printf("get dependencies from etcd, key = %s\n", etcdkey)
+		dependencies, err := e.GetValue(etcdkey)
+		if nil != err {
+			log.Fatal("Unable to get dependencies")
+			fmt.Fprint(w, "{ status : failure }")
+		} else {
+			fmt.Printf("got dependencies from etcd, key = %s dependencies= %s\n", etcdkey, dependencies)
+			fmt.Fprint(w, dependencies)
+		}
+	case "setdependencies":
+		etcdkey = "/kless/dependencies/" + handlerID
+		fmt.Printf("put value to etcd, key = %s\n", etcdkey)
+		value, err := ioutil.ReadAll(r.Body)
+		if nil != err {
+			log.Fatal("Unable to read request body")
+		}
+
+		err = e.SetValue(etcdkey, string(value))
+		if nil != err {
+			log.Fatal("Unable to set value")
+		}
+
+		fmt.Fprintf(w, "{ status: OK }")
 	default:
-		fmt.Fprintf(w, "op query parameter must be one of: 'get', 'put', 'sethandlerstatus', 'gethandlerstatus', 'setbuildoutput', 'getbuildoutput', 'getsource'")
+		fmt.Fprintf(w, "op query parameter must be one of: 'get', 'put', 'sethandlerstatus', 'gethandlerstatus', 'setbuildoutput', 'getbuildoutput', 'getsource', 'getdependencies', 'setdependencies'")
 	}
 
 }

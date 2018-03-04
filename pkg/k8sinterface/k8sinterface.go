@@ -28,7 +28,8 @@ type JobInfo struct {
 	Namespace           string
 	Image               string
 	KlessServer         string
-	KlessRepo           string
+	KlessRegistry       string
+	EventHandlerID      string
 	EventHandlerName    string
 	EventHandlerVersion string
 	EventHandlerSource  string
@@ -254,8 +255,9 @@ func (k *K8sInterface) CreateIngress(name string, namespace string, host string,
 			APIVersion: "extensions/v1beta1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      name,
-			Namespace: namespace,
+			Name:        name,
+			Namespace:   namespace,
+			Annotations: map[string]string{"kubernetes.io/ingress.class": "tectonic"},
 		},
 		Spec: v1beta1.IngressSpec{
 			Rules: []v1beta1.IngressRule{
@@ -306,6 +308,32 @@ func (k *K8sInterface) CreateIngress(name string, namespace string, host string,
 			return fmt.Errorf("could not create ingress: %s", err)
 		}
 		logger.Println("ingress created")
+	}
+
+	return nil
+}
+
+//DeleteIngress deletes an ingress
+func (k *K8sInterface) DeleteIngress(name string, namespace string) error {
+	// creates the in-cluster config
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	c, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ingress := c.Extensions().Ingresses(namespace)
+
+	err = ingress.Delete(name, &metav1.DeleteOptions{})
+	switch {
+	case err == nil:
+		logger.Println("ingress deleted")
+	case !errors.IsNotFound(err):
+		return fmt.Errorf("could not delete ingress: %s", err)
 	}
 
 	return nil
@@ -414,11 +442,19 @@ func (k *K8sInterface) CreateJob(j *JobInfo) error {
 								},
 								apiv1.EnvVar{
 									Name:  "KLESS_REPO",
-									Value: j.KlessRepo,
+									Value: j.KlessRegistry,
+								},
+								apiv1.EnvVar{
+									Name:  "KLESS_EVENT_HANDLER_ID",
+									Value: j.EventHandlerID,
 								},
 								apiv1.EnvVar{
 									Name:  "KLESS_EVENT_HANDLER_NAME",
 									Value: j.EventHandlerName,
+								},
+								apiv1.EnvVar{
+									Name:  "KLESS_EVENT_HANDLER_NAMESPACE",
+									Value: j.Namespace,
 								},
 								apiv1.EnvVar{
 									Name:  "KLESS_EVENT_HANDLER_VERSION",
@@ -504,7 +540,7 @@ func (k *K8sInterface) CreateJob(j *JobInfo) error {
 }
 
 //CreateService creates a service
-func (k *K8sInterface) CreateService(serviceName string, appName string, namespace string) error {
+func (k *K8sInterface) CreateService(serviceName string, appName string, namespace string, handlerPort int32, frontendPort int32) error {
 	serviceSpec := &apiv1.Service{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Service",
@@ -521,12 +557,12 @@ func (k *K8sInterface) CreateService(serviceName string, appName string, namespa
 				apiv1.ServicePort{
 					Name:     "handler",
 					Protocol: apiv1.ProtocolTCP,
-					Port:     8080,
+					Port:     handlerPort,
 				},
 				apiv1.ServicePort{
 					Name:     "frontend",
 					Protocol: apiv1.ProtocolTCP,
-					Port:     3080,
+					Port:     frontendPort,
 				},
 			},
 		},

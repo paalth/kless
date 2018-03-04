@@ -4,6 +4,8 @@
 
 /kless/source/<event handler uuid> - value = event handler source code
 
+/kless/dependencies/<event handler uuid> - value = event handler dependecies 
+
 /kless/handlers/<event handler name> - value = event handler info encoded as JSON
 
 /kless/frontendtypes/<frontend type name> - value = frontend image repository URL

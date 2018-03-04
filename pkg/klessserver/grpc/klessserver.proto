@@ -29,6 +29,7 @@ service KlessAPI {
   rpc CreateEventHandlerFrontend (CreateEventHandlerFrontendRequest) returns (CreateEventHandlerFrontendReply) {}
   rpc GetEventHandlerFrontends (GetEventHandlerFrontendsRequest) returns (stream FrontendInformation) {}
   rpc DeleteEventHandlerFrontend (DeleteEventHandlerFrontendRequest) returns (DeleteEventHandlerFrontendReply) {}
+  rpc SubmitEventHandlerFrontendRequest (SubmitEventHandlerFrontendRequestRequest) returns (SubmitEventHandlerFrontendRequestReply) {}
 
   // Event handler frontend type API
   rpc CreateEventHandlerFrontendType (CreateEventHandlerFrontendTypeRequest) returns (CreateEventHandlerFrontendTypeReply) {}
@@ -189,6 +190,17 @@ message DeleteEventHandlerFrontendRequest {
 
 message DeleteEventHandlerFrontendReply {
   string response = 1;
+}
+
+message SubmitEventHandlerFrontendRequestRequest {
+  string clientversion = 1;
+  string eventHandlerFrontendName = 2;
+  bytes request = 3;
+}
+
+message SubmitEventHandlerFrontendRequestReply {
+  string status = 1;
+  bytes response = 2;
 }
 
 message CreateEventHandlerFrontendTypeRequest {

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/paalth/kless/pkg/etcdinterface"
 	"github.com/paalth/kless/pkg/influxdbinterface"
@@ -67,6 +68,24 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 
 	e.SetValue(etcdSourceKey, sourceCode)
 
+	eventHandlerDependenciesURL := in.EventHandlerDependenciesURL
+
+	eventHandlerDependencies := in.EventHandlerDependencies
+
+	if len(eventHandlerDependencies) > 0 {
+		dependencies := string(eventHandlerDependencies)
+
+		etcdDependenciesKey := "/kless/dependencies/" + eventHandlerID
+
+		fmt.Printf("Adding event handler dependencies to etcd with key = %s, dependencies:\n%s\n", etcdDependenciesKey, dependencies)
+
+		e.SetValue(etcdDependenciesKey, dependencies)
+
+		klessServer := "kless-server." + os.Getenv("SERVER_NAMESPACE") + ":8010"
+
+		eventHandlerDependenciesURL = klessServer + "/" + "etcd?op=getdependencies&key=" + eventHandlerID
+	}
+
 	handler := &klesshandlers.ServiceHandler{}
 
 	eventHandlerInfo := &klesshandlers.EventHandlerInfo{
@@ -77,7 +96,7 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 		EventHandlerBuilder:    in.EventHandlerBuilder,
 		EventHandlerBuilderURL: eventHandlerBuilderURL,
 		Frontend:               in.EventHandlerFrontend,
-		DependenciesURL:        in.EventHandlerDependenciesURL,
+		DependenciesURL:        eventHandlerDependenciesURL,
 		Comment:                in.Comment,
 	}
 
@@ -119,7 +138,7 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 		return &klessapi.CreateEventHandlerReply{Response: "Event handler frontend type not found"}, nil
 	}
 
-	handler.CreateEventHandler(eventHandlerInfo, eventHandlerFrontendInfo, eventHandlerFrontendTypeURL)
+	handler.BuildEventHandler(eventHandlerInfo)
 
 	etcdHandlerKey := "/kless/handlers/" + in.EventHandlerName
 
@@ -135,6 +154,57 @@ func (s *APIServer) CreateEventHandler(ctx context.Context, in *klessapi.CreateE
 	fmt.Printf("Leaving CreateEventHandler\n")
 
 	return &klessapi.CreateEventHandlerReply{Response: "OK"}, nil
+}
+
+//DeployEventHandler requests the deployment of a built handler
+func (s *APIServer) DeployEventHandler(handlerName string, handlerNamespace string, handlerVersion string) error {
+
+	e := &etcdinterface.EtcdInterface{}
+
+	buildersJSON, _ := e.GetValue("/kless/handlers/" + handlerName)
+
+	eventHandlerInfo := klesshandlers.EventHandlerInfo{}
+
+	err := json.Unmarshal([]byte(buildersJSON), &eventHandlerInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	etcdFrontendKey := "/kless/frontend/" + eventHandlerInfo.Frontend
+
+	fmt.Printf("Getting event handler frontend from etcd with key = %s\n", etcdFrontendKey)
+
+	eventHandlerFrontendInfoJSON, err := e.GetValue(etcdFrontendKey)
+
+	if nil != err {
+		return nil
+	}
+
+	if eventHandlerFrontendInfoJSON == "" {
+		return nil
+	}
+
+	eventHandlerFrontendInfo := &klesshandlers.EventHandlerFrontendInfo{}
+
+	err = json.Unmarshal([]byte(eventHandlerFrontendInfoJSON), &eventHandlerFrontendInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	etcdTypeKey := "/kless/frontendtypes/" + eventHandlerFrontendInfo.Type
+
+	fmt.Printf("Get event handler frontend type repository URL from etcd with key = %s\n", etcdTypeKey)
+
+	eventHandlerFrontendTypeURL, err := e.GetValue(etcdTypeKey)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	handler := &klesshandlers.ServiceHandler{}
+
+	handler.DeployEventHandler(&eventHandlerInfo, eventHandlerFrontendInfo, eventHandlerFrontendTypeURL)
+
+	return nil
 }
 
 //GetEventHandlers retrieves a list of all defined event handlers

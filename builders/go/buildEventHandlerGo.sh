@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Starting build of Go event handler"
+echo "Starting build of Go event handler, builder version = 0.0.1"
 
 CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildInit"
 curl -s $KLESS_SERVER/$CURRENT_STATUS 
@@ -82,5 +82,9 @@ docker push $TAG
 echo "Reporting complete status"
 CURRENT_STATUS="etcd?op=sethandlerstatus&handler=$KLESS_EVENT_HANDLER_NAME:$KLESS_EVENT_HANDLER_VERSION&status=BuildComplete"
 curl -s $KLESS_SERVER/$CURRENT_STATUS 
+
+echo "Requesting deployment of built handler"
+DEPLOY_REQ="api?op=deploy&handlerName=$KLESS_EVENT_HANDLER_NAME&handlerNamespace=$KLESS_EVENT_HANDLER_NAMESPACE&handlerVersion=$KLESS_EVENT_HANDLER_VERSION&handlerId=$KLESS_EVENT_HANDLER_ID"
+curl -s $KLESS_SERVER/$DEPLOY_REQ
 
 echo "Image creation complete"

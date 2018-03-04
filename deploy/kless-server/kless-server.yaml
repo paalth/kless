@@ -25,6 +25,8 @@ spec:
             value: "KLESS_DEST_REGISTRY_PASSWORD"
           - name: REGISTRY_HOSTPORT
             value: "KLESS_DEST_REGISTRY_HOSTPORT"
+          - name: INGRESS_DNS_WILDCARD
+            value: "someingress.com"
         ports:
         - containerPort: 50051
           name: api

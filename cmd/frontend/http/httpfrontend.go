@@ -83,11 +83,15 @@ func (p *HTTPFrontendProxy) handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	listenAddress := "0.0.0.0:3080"
-	targetAddress := "http://localhost:8080"
-	namespace := os.Getenv("KLESS_EVENT_HANDLER_NAMESPACE")
 	eventHandler := os.Getenv("KLESS_EVENT_HANDLER_NAME")
+	namespace := os.Getenv("KLESS_EVENT_HANDLER_NAMESPACE")
 	version := os.Getenv("KLESS_EVENT_HANDLER_VERSION")
+
+	httpPort := os.Getenv("KLESS_FRONTEND_HTTP_PORT")
+
+	listenAddress := "0.0.0.0:" + httpPort
+	targetAddress := "http://localhost:8080"
+
 	podName, err := os.Hostname()
 	if nil != err {
 		fmt.Printf("Unable to retrieve pod name, error = %v. Setting pod name to 'default'", err)
